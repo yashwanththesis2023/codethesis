@@ -1,0 +1,9 @@
+Outline: 24 24
+Block1 30
+Block2 26
+Block3 28
+Block4 27
+Block5 27
+Block6 22
+Block7 25
+Block8 3

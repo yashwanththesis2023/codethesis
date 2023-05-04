@@ -1,0 +1,98 @@
+#!/usr/bin/python3.6
+import sys
+import random  as rand
+from functools import reduce
+import operator
+import sympy
+#import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+
+class Block():
+    def __init__(self, ID, area):
+        self.ID = ID
+        self.area = area
+
+    def __repr__(self):
+        return "block{}".format(self.ID)
+
+    def __str__(self):
+        return "ID\t: {} \nArea\t: {}".format(self.ID,self.area)
+
+""" Choose randmly a block from generated blocks and tranform it to a preplaced block
+decompose the area to w and h  """
+
+class PreBlacedBlock():
+    def __init__(self, Block):
+        self.ID = Block.ID
+        self.area = Block.area
+        self.w = self.CalcW()
+        self.h = int(self.area/self.w)
+        self.x = 0
+        self.y = 0
+    def __repr__(self):
+        return "block{}".format(self.ID)
+
+    def __str__(self):
+        return "ID\t: {} \nArea\t: {} \nw\t: {} \nh\t: {} ".format(self.ID,self.area,self.w,self.h)
+
+    def CalcW(self):
+        wV=sympy.divisors(self.area)
+        """if len(wV)>3 :
+        	wV.pop(-1)
+        	wV.pop(0)"""
+        return rand.choice(wV)
+
+
+""" Create a block with randomly area between [amin,amax] such that the area 
+not prime value if a > FPGAwitdh  """
+
+def createBlock(i,amin,amax):
+	a = rand.randint(amin, amax)
+	if (sympy.isprime(a) and (a>W)) : a=a-1 
+	return Block(i,a)
+
+
+""" Create blocks with randomly area """
+
+def createBlockSet(sizeFPGA):
+	sizeBlocks=0
+	Blocks=[]
+	i=0
+	while True:
+		Blocks.append(createBlock(i+1,1,30))
+		sizeBlocks=sizeBlocks+Blocks[i].area
+		if not (sizeBlocks<sizeFPGA):
+			Blocks.pop()
+			sizeBlocks=sum(eachBlk.area for eachBlk in Blocks)
+			break
+		i=i+1
+	ss=sizeFPGA-sizeBlocks
+	if (sympy.isprime(ss) and (ss>W)) : ss=ss-1 
+	Blocks.append(createBlock(i+1,ss,ss))
+	return Blocks
+
+
+def main():
+	global W
+	print("Output File :",sys.argv[1])
+	print("FPGA Width :",sys.argv[2])
+	print("FPGA height :",sys.argv[3])
+	W=int(sys.argv[2])
+	H=int(sys.argv[3])
+	sizeFPGA=W*H
+	print("FPGA Size :",sizeFPGA)
+	print("Area Utilization [0-1] :",sys.argv[4])
+	SetBlock=createBlockSet(int(sizeFPGA*float(sys.argv[4])))
+	Blkplaced=PreBlacedBlock(rand.choice(SetBlock))
+	SetBlock.pop(Blkplaced.ID-1)
+	file = str(sys.argv[1])
+	f = open(file, "w")
+	f.write("Outline: {} {}".format(W,H))
+	for blk in SetBlock:
+		f.write("\nBlock{} {}".format(blk.ID,blk.area))
+	f.write("\n# preplaced block x y width height")
+	f.write("\nBlock{} {} {} {} {}".format(Blkplaced.ID,Blkplaced.x,Blkplaced.y,Blkplaced.w,Blkplaced.h))
+	f.close()
+
+
+main()

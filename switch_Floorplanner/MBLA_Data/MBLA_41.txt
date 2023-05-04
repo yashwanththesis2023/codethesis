@@ -1,0 +1,26 @@
+Outline: 16 16
+Block1 3
+Block2 1
+Block3 14
+Block4 10
+Block5 9
+Block6 4
+Block7 3
+Block8 3
+Block9 9
+Block10 6
+Block11 11
+Block12 2
+Block13 2
+Block14 10
+Block15 11
+Block16 14
+Block17 12
+Block18 9
+Block19 14
+Block20 2
+Block21 4
+Block22 1
+Block23 8
+Block24 9
+Block25 1
