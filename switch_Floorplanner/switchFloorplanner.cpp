@@ -369,7 +369,7 @@ public:
             printf("floorplan height : %f \n", objval);
 
             // find best floorplan (width the smalles height)
-            static int best_height = INT8_MAX;
+            static int best_height = INT_MAX;
 
 
             char *ptr;
@@ -380,7 +380,7 @@ public:
                 print_block_configurations();
                 best_height = min(best_height, new_height);
             }
-            printf("best floor plan found with the minimal height of %d\n", best_height);
+            printf("best bounding area  %d\n", best_height);
             return;
         }
 
@@ -617,17 +617,18 @@ public:
         IloNumVar yh(env, 0.0, IloInfinity, ILOFLOAT, "y");
 
 
-        x.add(IloNumVar(env, 0, IloInfinity, ILOFLOAT, "Nothing1"));
+        x.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing1"));
         r.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing2"));
-        y.add(IloNumVar(env, 0, IloInfinity, ILOFLOAT, "Nothing3"));
+        y.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing3"));
 
 
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
         double bounding_area = 0.0;
-        int M = 0;
-        for (auto const &v : *block_list)
-            M += max(v->width, v->height);
+        int M = fpga_width;
+        // for (auto const &v : *block_list)
+        //      M += max(v->width, v->height);
+        //M = max(W,H)
 
         int eq1 = 1; // equation number
         int hi, hj, wi, wj;
@@ -639,11 +640,11 @@ public:
         for (int i = 1; i <= block_list->size(); i++)
         {
             name = "x" + to_string(i);
-            x.add(IloNumVar(env, 0, +IloInfinity, ILOFLOAT, name.c_str()));
+            x.add(IloNumVar(env, 0, +IloInfinity, ILOINT, name.c_str()));
             name = "r" + to_string(i);
             r.add(IloNumVar(env, 0, 1, ILOINT, name.c_str()));
             name = "y" + to_string(i);
-            y.add(IloNumVar(env, 0, +IloInfinity, ILOFLOAT, name.c_str()));
+            y.add(IloNumVar(env, 0, +IloInfinity, ILOINT, name.c_str()));
             p[i] = IloNumVarArray(env, block_list->size());
             q[i] = IloNumVarArray(env, block_list->size());
         }
@@ -663,7 +664,7 @@ public:
             hi = block_list->at(i - 1)->height;
             wi = block_list->at(i - 1)->width;
             model.add(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi);
-            model.add(y[i] + wi * r[i] - hi * r[i] - yh <= -hi);
+            model.add(y[i] - yh <= -hi);
         }
         for (int i = 1; i <= block_list->size(); i++)
         {
@@ -675,7 +676,7 @@ public:
                 wj = block_list->at(j - 1)->width;
                 model.add(x[i] + hi * r[i] - wi * r[i] - x[j] - M * p[i][j] - M * q[i][j] <= -wi);
                 model.add(y[i] + wi * r[i] - hi * r[i] - y[j] - M * p[i][j] + M * q[i][j] <= M - hi);
-                model.add(x[i] - hj * r[j] - wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj);
+                model.add(x[i] - hj * r[j] + wj * r[j] - x[j] - M *p[i][j] + M * q[i][j] >= -M + wj);
                 model.add(y[i] - wj * r[j] + hj * r[j] - y[j] - M * p[i][j] - M * q[i][j] >= -2 * M + hj);
             }
         }
@@ -708,7 +709,7 @@ public:
         bounding_area = getBoundingRectAreaNEW();
         cout<< "bounding area  " << bounding_area << endl;
         print_block_configurations();
-        if(cplex.getStatus() == 2){return cplex.getObjValue();}
+        if(cplex.getStatus() == 2){return bounding_area;}
         else{return -1;}
     }
 #endif
