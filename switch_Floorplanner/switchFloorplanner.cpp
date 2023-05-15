@@ -366,7 +366,7 @@ public:
 
             double objval = (this->*solver)();
 
-            printf("floorplan height : %f \n", objval);
+            printf("current floorplan area : %f \n", objval);
 
             // find best floorplan (width the smalles height)
             static int best_height = INT_MAX;
@@ -625,7 +625,7 @@ public:
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
         double bounding_area = 0.0;
-        int M = fpga_width;
+        int M = max(fpga_width,fpga_height);
         // for (auto const &v : *block_list)
         //      M += max(v->width, v->height);
         //M = max(W,H)
@@ -708,6 +708,7 @@ public:
         }
         bounding_area = getBoundingRectAreaNEW();
         cout<< "bounding area  " << bounding_area << endl;
+        cout<< "height  "<< cplex.getObjValue()<<endl;
         print_block_configurations();
         if(cplex.getStatus() == 2){return bounding_area;}
         else{return -1;}

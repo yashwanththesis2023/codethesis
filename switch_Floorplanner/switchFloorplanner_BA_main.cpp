@@ -624,7 +624,7 @@ public:
 
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
-        double bounding_area = 0.0;
+        int bounding_area = 0;
         int M = fpga_width;
         // for (auto const &v : *block_list)
         //      M += max(v->width, v->height);
@@ -706,6 +706,7 @@ public:
             block_list->at(i - 1)->y = cplex.getValue(y[i]);
             //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
         }
+        
         bounding_area = getBoundingRectAreaNEW();
         cout<< "bounding area  " << bounding_area << endl;
         print_block_configurations();
