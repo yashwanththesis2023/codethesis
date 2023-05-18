@@ -1,7 +1,7 @@
 #---------------------------------DIR------------------------------------
-GUROBIDIR= /opt/gurobi811/linux64
-CPLEXDIR      = /home/student/CPLEX_Studio129/cplex
-CONCERTDIR    = /home/student/CPLEX_Studio129/concert
+GUROBIDIR= /pc2/groups/hpc-prf-lgrsfpga/yashwanth/Gurobi/gurobi1000/linux64
+CPLEXDIR      = /pc2/groups/hpc-prf-lgrsfpga/yashwanth/cplex/cplex
+CONCERTDIR    = /pc2/groups/hpc-prf-lgrsfpga/yashwanth/cplex/concert
 
 
 #---------------------------------LIB--------------------------------------
@@ -16,7 +16,7 @@ CONCERTINCDIR = $(CONCERTDIR)/include
 CPLEXINC 	= -I$(CONCERTINCDIR) -I$(CPLEXINCDIR) 
 CPLEXDIRS  	= -L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR) 
 CPLEXFLAGS 	= -lconcert -lilocplex -lcplex -lm -pthread 
-GUROBILIB   = -L$(GUROBILIBDIR) -lgurobi_c++ -lgurobi81
+GUROBILIB   = -L$(GUROBILIBDIR) -lgurobi_c++ -lgurobi100 
 
 #-------------------------------LPSOLVE------------------------------------------
 lpsolveDIR=-L/usr/lib/lp_solve -llpsolve55

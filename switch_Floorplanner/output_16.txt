@@ -1,0 +1,525 @@
+loading done
+decomposition done
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0x2969b5e1
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+02]
+Found heuristic solution: objective 28.0000000
+Presolve removed 2 rows and 2 columns
+Presolve time: 0.00s
+Presolved: 48 rows, 34 columns, 203 nonzeros
+Variable types: 0 continuous, 34 integer (23 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 28 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.800000000000e+01, best bound 2.800000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 28.000000 
+Block1 x=0 y=0 w=1 h=28  Block2 x=0 y=0 w=1 h=17  Block3 x=0 y=0 w=1 h=15  Block4 x=0 y=0 w=1 h=21  Block5 x=0 y=0 w=1 h=17  
+best bounding area  28
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xd1834daf
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 8e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+02]
+Found heuristic solution: objective 28.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 28 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.800000000000e+01, best bound 2.800000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 28.000000 
+best bounding area  28
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0x73739ab4
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 9e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+02]
+Found heuristic solution: objective 28.0000000
+Presolve removed 2 rows and 2 columns
+Presolve time: 0.00s
+Presolved: 48 rows, 34 columns, 203 nonzeros
+Variable types: 0 continuous, 34 integer (23 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 28 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.800000000000e+01, best bound 2.800000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 28.000000 
+best bounding area  28
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xeb0532f3
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 28.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 28 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.800000000000e+01, best bound 2.800000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 28.000000 
+best bounding area  28
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0x20f3c803
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 8e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+02]
+Found heuristic solution: objective 21.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 21 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.100000000000e+01, best bound 2.100000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 21.000000 
+Block1 x=0 y=0 w=2 h=14  Block2 x=0 y=0 w=1 h=17  Block3 x=0 y=0 w=1 h=15  Block4 x=0 y=0 w=1 h=21  Block5 x=0 y=0 w=1 h=17  
+best bounding area  21
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0x87dd32f9
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 17.0000000
+Presolve time: 0.00s
+Presolved: 50 rows, 36 columns, 225 nonzeros
+Variable types: 0 continuous, 36 integer (25 binary)
+
+Root relaxation: objective 3.000000e+00, 15 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    3.00000    0    8   17.00000    3.00000  82.4%     -    0s
+H    0     0                       3.0000000    3.00000  0.00%     -    0s
+     0     0    3.00000    0    8    3.00000    3.00000  0.00%     -    0s
+
+Explored 1 nodes (15 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 2: 3 17 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.000000000000e+00, best bound 3.000000000000e+00, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 3.000000 
+Block1 x=0 y=0 w=2 h=14  Block2 x=0 y=0 w=1 h=17  Block3 x=0 y=0 w=1 h=15  Block4 x=0 y=0 w=3 h=7  Block5 x=0 y=0 w=1 h=17  
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0x0e4269b7
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 21.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 21 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.100000000000e+01, best bound 2.100000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 21.000000 
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xff0a213c
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 6e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 17.0000000
+Presolve time: 0.00s
+Presolved: 50 rows, 36 columns, 225 nonzeros
+Variable types: 0 continuous, 36 integer (25 binary)
+
+Root relaxation: objective 3.000000e+00, 14 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    3.00000    0    7   17.00000    3.00000  82.4%     -    0s
+H    0     0                       5.0000000    3.00000  40.0%     -    0s
+H    0     0                       4.0000000    3.00000  25.0%     -    0s
+H    0     0                       3.0000000    3.00000  0.00%     -    0s
+
+Cutting planes:
+  MIR: 5
+
+Explored 1 nodes (14 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 4: 3 4 5 17 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.000000000000e+00, best bound 3.000000000000e+00, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 3.000000 
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xb8cbbd86
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 8e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 21.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 21 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.100000000000e+01, best bound 2.100000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 21.000000 
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xe7bea3e8
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 6e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 17.0000000
+Presolve time: 0.00s
+Presolved: 50 rows, 36 columns, 225 nonzeros
+Variable types: 0 continuous, 36 integer (25 binary)
+
+Root relaxation: objective 4.000000e+00, 13 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    4.00000    0    6   17.00000    4.00000  76.5%     -    0s
+H    0     0                      16.0000000    4.00000  75.0%     -    0s
+H    0     0                       7.0000000    4.00000  42.9%     -    0s
+H    0     0                       5.0000000    4.00000  20.0%     -    0s
+H    0     0                       4.0000000    4.00000  0.00%     -    0s
+     0     0    4.00000    0    6    4.00000    4.00000  0.00%     -    0s
+
+Explored 1 nodes (13 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 5: 4 5 7 ... 17
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.000000000000e+00, best bound 4.000000000000e+00, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 4.000000 
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xa7f20fe9
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 7e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 21.0000000
+Presolve removed 1 rows and 1 columns
+Presolve time: 0.00s
+Presolved: 49 rows, 35 columns, 214 nonzeros
+Variable types: 0 continuous, 35 integer (24 binary)
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 1: 21 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 2.100000000000e+01, best bound 2.100000000000e+01, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 21.000000 
+best bounding area  3
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 50 rows, 36 columns and 225 nonzeros
+Model fingerprint: 0xae889895
+Variable types: 1 continuous, 35 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective 17.0000000
+Presolve time: 0.00s
+Presolved: 50 rows, 36 columns, 225 nonzeros
+Variable types: 0 continuous, 36 integer (25 binary)
+
+Root relaxation: objective 4.000000e+00, 15 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    4.00000    0    7   17.00000    4.00000  76.5%     -    0s
+H    0     0                       4.0000000    4.00000  0.00%     -    0s
+     0     0    4.00000    0    7    4.00000    4.00000  0.00%     -    0s
+
+Explored 1 nodes (15 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 2: 4 17 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.000000000000e+00, best bound 4.000000000000e+00, gap 0.0000%
+--------------gurobi---------------
+current floorplan area : 4.000000 
+best bounding area  3
+Elapsed time: 0.751723

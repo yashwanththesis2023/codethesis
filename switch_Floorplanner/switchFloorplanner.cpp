@@ -723,6 +723,7 @@ public:
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
         int M = 0;
+        int bounding-area = 0;
         for (auto const &v : *block_list)
             M += max(v->width, v->height);
 
@@ -786,8 +787,17 @@ public:
         m1.write("model_gurobi.lp");
         m1.write("model_gurobi.sol");
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
+        for (int i = 1; i <= block_list->size(); i++){
+            block_list->at(i - 1)->x = m1.get(x[i]);
+            //cout<<"inside updating x value ="<< cplex.getValue(x[i])<<endl;
+            block_list->at(i - 1)->y = m1.get(y[i]);
+            //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
+        }
+        bounding_area = getBoundingRectAreaNEW();
+        cout<< "gurobi bounding area  " << bounding_area << endl;
+        //m1.get(GRB_DoubleAttr_ObjVal)
         if(m1.get(GRB_IntAttr_Status) == 2)
-        {return m1.get(GRB_DoubleAttr_ObjVal);}
+        {return bounding_area;}
         else{return -1;}
     }
 #endif

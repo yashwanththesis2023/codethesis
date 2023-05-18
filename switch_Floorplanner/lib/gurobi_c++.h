@@ -2,7 +2,7 @@
 #ifndef _GUROBI_CPP_H
 #define _GUROBI_CPP_H
  
-// Copyright (C) 2019, Gurobi Optimization, LLC
+// Copyright (C) 2022, Gurobi Optimization, LLC
 // All Rights Reserved
 #include <iostream>
 #include <vector>
@@ -19,8 +19,11 @@ extern "C" {
 enum GRB_DoubleParam {
   GRB_DoubleParam_Cutoff,
   GRB_DoubleParam_IterationLimit,
+  GRB_DoubleParam_MemLimit,
+  GRB_DoubleParam_SoftMemLimit,
   GRB_DoubleParam_NodeLimit,
   GRB_DoubleParam_TimeLimit,
+  GRB_DoubleParam_WorkLimit,
   GRB_DoubleParam_FeasibilityTol,
   GRB_DoubleParam_IntFeasTol,
   GRB_DoubleParam_MarkowitzTol,
@@ -39,12 +42,23 @@ enum GRB_DoubleParam {
   GRB_DoubleParam_ImproveStartTime,
   GRB_DoubleParam_FeasRelaxBigM,
   GRB_DoubleParam_TuneTimeLimit,
+  GRB_DoubleParam_TuneCleanup,
+  GRB_DoubleParam_TuneTargetMIPGap,
+  GRB_DoubleParam_TuneTargetTime,
   GRB_DoubleParam_PreSOS1BigM,
   GRB_DoubleParam_PreSOS2BigM,
   GRB_DoubleParam_PoolGap,
+  GRB_DoubleParam_PoolGapAbs,
   GRB_DoubleParam_BestObjStop,
   GRB_DoubleParam_BestBdStop,
-  GRB_DoubleParam_CSQueueTimeout
+  GRB_DoubleParam_CSQueueTimeout,
+  GRB_DoubleParam_FuncPieceError,
+  GRB_DoubleParam_FuncPieceLength,
+  GRB_DoubleParam_FuncPieceRatio,
+  GRB_DoubleParam_FuncMaxVal,
+  GRB_DoubleParam_NoRelHeurTime,
+  GRB_DoubleParam_NoRelHeurWork,
+  GRB_DoubleParam_WLSTokenRefresh
 };
 
 enum GRB_IntParam {
@@ -56,6 +70,8 @@ enum GRB_IntParam {
   GRB_IntParam_NormAdjust,
   GRB_IntParam_Sifting,
   GRB_IntParam_SiftMethod,
+  GRB_IntParam_NetworkAlg,
+  GRB_IntParam_LPWarmStart,
   GRB_IntParam_SubMIPNodes,
   GRB_IntParam_VarBranch,
   GRB_IntParam_Cuts,
@@ -74,6 +90,11 @@ enum GRB_IntParam {
   GRB_IntParam_NetworkCuts,
   GRB_IntParam_SubMIPCuts,
   GRB_IntParam_InfProofCuts,
+  GRB_IntParam_RelaxLiftCuts,
+  GRB_IntParam_RLTCuts,
+  GRB_IntParam_BQPCuts,
+  GRB_IntParam_PSDCuts,
+  GRB_IntParam_LiftProjectCuts,
   GRB_IntParam_CutAggPasses,
   GRB_IntParam_CutPasses,
   GRB_IntParam_GomoryPasses,
@@ -109,8 +130,11 @@ enum GRB_IntParam {
   GRB_IntParam_BarHomogeneous,
   GRB_IntParam_PreQLinearize,
   GRB_IntParam_MIQCPMethod,
+  GRB_IntParam_NonConvex,
   GRB_IntParam_QCPDual,
   GRB_IntParam_LogToConsole,
+  GRB_IntParam_PreSOS1Encoding,
+  GRB_IntParam_PreSOS2Encoding,
   GRB_IntParam_PreSparsify,
   GRB_IntParam_PreMIQCPForm,
   GRB_IntParam_Seed,
@@ -123,8 +147,8 @@ enum GRB_IntParam {
   GRB_IntParam_TuneOutput,
   GRB_IntParam_TuneJobs,
   GRB_IntParam_TuneCriterion,
+  GRB_IntParam_TuneMetric,
   GRB_IntParam_Disconnected,
-  GRB_IntParam_NoRelHeuristic,
   GRB_IntParam_UpdateMode,
   GRB_IntParam_Record,
   GRB_IntParam_ObjNumber,
@@ -132,6 +156,7 @@ enum GRB_IntParam {
   GRB_IntParam_MultiObjPre,
   GRB_IntParam_PoolSolutions,
   GRB_IntParam_PoolSearchMode,
+  GRB_IntParam_ScenarioNumber,
   GRB_IntParam_StartNumber,
   GRB_IntParam_StartNodeLimit,
   GRB_IntParam_IgnoreNames,
@@ -140,7 +165,16 @@ enum GRB_IntParam {
   GRB_IntParam_CSTLSInsecure,
   GRB_IntParam_CSIdleTimeout,
   GRB_IntParam_ServerTimeout,
-  GRB_IntParam_TSPort
+  GRB_IntParam_TSPort,
+  GRB_IntParam_JSONSolDetail,
+  GRB_IntParam_CSBatchMode,
+  GRB_IntParam_FuncPieces,
+  GRB_IntParam_CSClientLog,
+  GRB_IntParam_IntegralityFocus,
+  GRB_IntParam_NLPHeur,
+  GRB_IntParam_WLSTokenDuration,
+  GRB_IntParam_LicenseID,
+  GRB_IntParam_OBBT
 };
 
 enum GRB_StringParam {
@@ -158,6 +192,17 @@ enum GRB_StringParam {
   GRB_StringParam_CloudSecretKey,
   GRB_StringParam_CloudPool,
   GRB_StringParam_CloudHost,
+  GRB_StringParam_JobID,
+  GRB_StringParam_CSManager,
+  GRB_StringParam_CSAuthToken,
+  GRB_StringParam_CSAPIAccessID,
+  GRB_StringParam_CSAPISecret,
+  GRB_StringParam_UserName,
+  GRB_StringParam_CSAppName,
+  GRB_StringParam_SolFiles,
+  GRB_StringParam_WLSAccessID,
+  GRB_StringParam_WLSSecret,
+  GRB_StringParam_WLSToken,
   GRB_StringParam_Dummy
 };
 
@@ -179,6 +224,7 @@ enum GRB_IntAttr {
   GRB_IntAttr_IsQCP,
   GRB_IntAttr_IsMultiObj,
   GRB_IntAttr_Status,
+  GRB_IntAttr_ConcurrentWinMethod,
   GRB_IntAttr_SolCount,
   GRB_IntAttr_BarIterCount,
   GRB_IntAttr_VBasis,
@@ -205,6 +251,12 @@ enum GRB_IntAttr {
   GRB_IntAttr_IISSOS,
   GRB_IntAttr_IISQConstr,
   GRB_IntAttr_IISGenConstr,
+  GRB_IntAttr_IISLBForce,
+  GRB_IntAttr_IISUBForce,
+  GRB_IntAttr_IISConstrForce,
+  GRB_IntAttr_IISSOSForce,
+  GRB_IntAttr_IISQConstrForce,
+  GRB_IntAttr_IISGenConstrForce,
   GRB_IntAttr_TuneResultCount,
   GRB_IntAttr_Lazy,
   GRB_IntAttr_VarHintPri,
@@ -213,7 +265,13 @@ enum GRB_IntAttr {
   GRB_IntAttr_GenConstrType,
   GRB_IntAttr_NumStart,
   GRB_IntAttr_Partition,
-  GRB_IntAttr_LicenseExpiration
+  GRB_IntAttr_LicenseExpiration,
+  GRB_IntAttr_NumScenarios,
+  GRB_IntAttr_FuncPieces,
+  GRB_IntAttr_BatchErrorCode,
+  GRB_IntAttr_BatchStatus,
+  GRB_IntAttr_Fingerprint,
+  GRB_IntAttr_PoolIgnore
 };
 
 enum GRB_CharAttr {
@@ -224,6 +282,7 @@ enum GRB_CharAttr {
 
 enum GRB_DoubleAttr {
   GRB_DoubleAttr_Runtime,
+  GRB_DoubleAttr_Work,
   GRB_DoubleAttr_ObjCon,
   GRB_DoubleAttr_LB,
   GRB_DoubleAttr_UB,
@@ -260,6 +319,7 @@ enum GRB_DoubleAttr {
   GRB_DoubleAttr_QCPi,
   GRB_DoubleAttr_Slack,
   GRB_DoubleAttr_QCSlack,
+  GRB_DoubleAttr_MaxVio,
   GRB_DoubleAttr_BoundVio,
   GRB_DoubleAttr_BoundSVio,
   GRB_DoubleAttr_BoundVioSum,
@@ -308,8 +368,20 @@ enum GRB_DoubleAttr {
   GRB_DoubleAttr_ObjNRelTol,
   GRB_DoubleAttr_ObjNAbsTol,
   GRB_DoubleAttr_ObjNVal,
+  GRB_DoubleAttr_OpenNodeCount,
   GRB_DoubleAttr_PoolObjBound,
-  GRB_DoubleAttr_PoolObjVal
+  GRB_DoubleAttr_PoolObjVal,
+  GRB_DoubleAttr_ScenNLB,
+  GRB_DoubleAttr_ScenNUB,
+  GRB_DoubleAttr_ScenNObj,
+  GRB_DoubleAttr_ScenNRHS,
+  GRB_DoubleAttr_ScenNX,
+  GRB_DoubleAttr_ScenNObjBound,
+  GRB_DoubleAttr_ScenNObjVal,
+  GRB_DoubleAttr_FuncPieceError,
+  GRB_DoubleAttr_FuncPieceLength,
+  GRB_DoubleAttr_FuncPieceRatio,
+  GRB_DoubleAttr_DNumNZs
 };
 
 enum GRB_StringAttr {
@@ -319,8 +391,12 @@ enum GRB_StringAttr {
   GRB_StringAttr_QCName,
   GRB_StringAttr_GenConstrName,
   GRB_StringAttr_ObjNName,
-  GRB_StringAttr_Server,
-  GRB_StringAttr_JobID
+  GRB_StringAttr_ScenNName,
+  GRB_StringAttr_BatchID,
+  GRB_StringAttr_VTag,
+  GRB_StringAttr_CTag,
+  GRB_StringAttr_QCTag,
+  GRB_StringAttr_BatchErrorMessage
 };
 
 class GRBVar;
@@ -386,18 +462,13 @@ class GRBEnv
   public:
 
     friend class GRBModel;
+    friend class GRBBatch;
 
     GRBEnv(const bool empty = false);
     GRBEnv(const char* logfilename);
     GRBEnv(const std::string& logfilename);
-    GRBEnv(const std::string& logfilename, const std::string& computeserver,
-           const std::string& router, const std::string& password,
-           const std::string& group, int tlsInsecure, int priority,
-           double timeout);
-    GRBEnv(const std::string& logfilename, const std::string& accessID,
-           const std::string& secretKey, const std::string& pool,
-           int priority);
     GRBEnv(const std::string&, const std::string&, const std::string&, int, const std::string&);
+    GRBEnv(const std::string&, const std::string&, const std::string&);
     GRBEnv(const std::string&, const std::string&, const std::string&, int, const std::string&,
            void* (__stdcall *)(MALLOCCB_ARGS),
            void* (__stdcall *)(CALLOCCB_ARGS),
@@ -406,12 +477,19 @@ class GRBEnv
            int   (__stdcall *)(THREADCREATECB_ARGS),
            void  (__stdcall *)(THREADJOINCB_ARGS),
            void*);
+    GRBEnv(const GRBEnv& xenv) : env(xenv.env),
+                                 envP(xenv.envP) {}
+
     ~GRBEnv();
     void start();
     void message(const std::string& msg);
+    void fixTuneParam(GRB_IntParam param);
+    void fixTuneParam(GRB_DoubleParam param);
+    void fixTuneParam(GRB_StringParam param);
+    void fixTuneParam(const std::string& paramname);
     int get(GRB_IntParam param) const;
     double get(GRB_DoubleParam param) const;
-    const std::string get(GRB_StringParam param) const;
+    std::string get(GRB_StringParam param) const;
     void set(GRB_IntParam param, int newvalue);
     void set(GRB_DoubleParam param, double newvalue);
     void set(GRB_StringParam param, const std::string& newvalue);
@@ -426,6 +504,7 @@ class GRBEnv
     void writeParams(const std::string& paramfile);
     void readParams(const std::string& paramfile);
     const std::string getErrorMsg() const;
+    int getWLSTokenLifespan() const;
 };
 
 class GRBModel
@@ -456,7 +535,9 @@ class GRBModel
 
   public:
 
+    GRBModel(const GRBEnv* env);
     GRBModel(const GRBEnv& env);
+    GRBModel(const GRBEnv* env, const std::string& filename);
     GRBModel(const GRBEnv& env, const std::string& filename);
     GRBModel(const GRBModel& xmodel);
 
@@ -470,8 +551,10 @@ class GRBModel
     GRBModel relax();
     GRBModel fixedModel();
     GRBModel presolve();
+    GRBModel dualize();
     GRBModel feasibility();
     GRBModel linearize();
+    GRBModel singleScenarioModel();
 
     double feasRelax(int relaxobjtype, bool minrelax, bool vrelax, bool crelax);
     double feasRelax(int relaxobjtype, bool minrelax, int vlen,
@@ -481,6 +564,7 @@ class GRBModel
 
     void update();
     void optimize();
+    std::string optimizeBatch();
     void optimizeasync();
     void computeIIS();
     void tune();
@@ -564,12 +648,36 @@ class GRBModel
                                  int len, std::string name="");
     GRBGenConstr addGenConstrOr(GRBVar resvar, const GRBVar* xvars,
                                 int len, std::string name="");
+    GRBGenConstr addGenConstrNorm(GRBVar resvar, const GRBVar* xvars,
+                                  int len, double which, std::string name="");
     GRBGenConstr addGenConstrIndicator(GRBVar binvar, int binval,
                                        const GRBLinExpr& expr, char sense, double rhs,
                                        std::string name="");
     GRBGenConstr addGenConstrIndicator(GRBVar binvar, int binval,
                                        const GRBTempConstr& constr,
                                        std::string name="");
+    GRBGenConstr addGenConstrPWL(GRBVar xvar, GRBVar yvar, int npts, const double* xpts,
+                                 const double* ypts, std::string name="");
+    GRBGenConstr addGenConstrPoly(GRBVar xvar, GRBVar yvar, int plen, const double* p,
+                                  std::string name="", std::string options="");
+    GRBGenConstr addGenConstrExp(GRBVar xvar, GRBVar yvar, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrExpA(GRBVar xvar, GRBVar yvar, double a, std::string name="",
+                                  std::string options="");
+    GRBGenConstr addGenConstrLog(GRBVar xvar, GRBVar yvar, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrLogA(GRBVar xvar, GRBVar yvar, double a, std::string name="",
+                                  std::string options="");
+    GRBGenConstr addGenConstrPow(GRBVar xvar, GRBVar yvar, double a, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrSin(GRBVar xvar, GRBVar yvar, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrCos(GRBVar xvar, GRBVar yvar, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrTan(GRBVar xvar, GRBVar yvar, std::string name="",
+                                 std::string options="");
+    GRBGenConstr addGenConstrLogistic(GRBVar xvar, GRBVar yvar, std::string name="",
+                                      std::string options="");
 
     void remove(GRBVar v);
     void remove(GRBConstr c);
@@ -595,17 +703,36 @@ class GRBModel
                          int* lenP);
     void getGenConstrOr(GRBGenConstr genc, GRBVar* resvarP, GRBVar* xvars,
                         int* lenP);
+    void getGenConstrNorm(GRBGenConstr genc, GRBVar* resvarP, GRBVar* xvars,
+                          int* lenP, double* whichP);
     void getGenConstrIndicator(GRBGenConstr genc, GRBVar* binvarP, int* binvalP,
                                GRBLinExpr* exprP, char* senseP, double* rhsP);
+    void getGenConstrPWL(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP, int* nptsP,
+                         double* xpts, double* ypts);
+    void getGenConstrPoly(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP, int* plenP, double* p);
+    void getGenConstrExp(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
+    void getGenConstrExpA(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP, double* aP);
+    void getGenConstrLog(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
+    void getGenConstrLogA(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP, double* aP);
+    void getGenConstrPow(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP, double* aP);
+    void getGenConstrSin(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
+    void getGenConstrCos(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
+    void getGenConstrTan(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
+    void getGenConstrLogistic(GRBGenConstr genc, GRBVar* xvarP, GRBVar* yvarP);
 
     GRBQuadExpr getQCRow(GRBQConstr c);
-    GRBEnv getEnv();
+    GRBEnv getEnv() const;
     GRBEnv getConcurrentEnv(int num);
     void discardConcurrentEnvs();
     GRBEnv getMultiobjEnv(int num);
     void discardMultiobjEnvs();
 
     // Parameters
+
+    void fixTuneParam(GRB_IntParam param);
+    void fixTuneParam(GRB_DoubleParam param);
+    void fixTuneParam(GRB_StringParam param);
+    void fixTuneParam(const std::string& paramname);
 
     int    get(GRB_IntParam param) const;
     double get(GRB_DoubleParam param) const;
@@ -643,6 +770,13 @@ class GRBModel
 
     int*    get(GRB_IntAttr    attr, const GRBGenConstr* xgenconstrs, int len);
     std::string* get(GRB_StringAttr attr, const GRBGenConstr* xgenconstrs, int len);
+
+    void prefetchAttr(GRB_IntAttr    attr);
+    void prefetchAttr(GRB_CharAttr   attr);
+    void prefetchAttr(GRB_DoubleAttr attr);
+    void prefetchAttr(GRB_StringAttr attr);
+
+    std::string getJSONSolution(void);
 
     void set(GRB_IntAttr    attr, const GRBVar* xvars,
              const int*    val, int len);
@@ -691,6 +825,11 @@ class GRBVar
     friend class GRBCallback;
 
     GRBVar();
+    GRBVar(const GRBVar& xvar) : varRep(xvar.varRep) {}
+
+    GRBVar& operator=(const GRBVar& xvar) { varRep = xvar.varRep; return *this; }
+
+    int index() const;
     int get(GRB_IntAttr attr) const;
     char get(GRB_CharAttr attr) const;
     double get(GRB_DoubleAttr attr) const;
@@ -718,6 +857,11 @@ class GRBConstr
     friend class GRBColumn;
 
     GRBConstr();
+    GRBConstr(const GRBConstr& constr) : conRep(constr.conRep) {}
+
+    GRBConstr& operator=(const GRBConstr& constr) { conRep = constr.conRep; return *this; }
+
+    int index() const;
     int get(GRB_IntAttr attr) const;
     char get(GRB_CharAttr attr) const;
     double get(GRB_DoubleAttr attr) const;
@@ -748,6 +892,7 @@ class GRBLinExpr: public GRBExpr
     std::vector<GRBVar> vars;
   public:
 
+    GRBLinExpr(const GRBLinExpr& lin);
     GRBLinExpr(double constant=0.0);
     GRBLinExpr(GRBVar var, double coeff=1.0);
 
@@ -779,7 +924,7 @@ class GRBLinExpr: public GRBExpr
     double getValue() const;
 
     void addTerms(const double* coeff, const GRBVar* var, int cnt);
-    GRBLinExpr operator=(const GRBLinExpr& rhs);
+    GRBLinExpr& operator=(const GRBLinExpr& expr);
     void operator+=(const GRBLinExpr& expr);
     void operator-=(const GRBLinExpr& expr);
     void operator*=(double mult);
@@ -803,6 +948,7 @@ class GRBQuadExpr: public GRBExpr
   public:
 
     GRBQuadExpr(double constant=0.0);
+    GRBQuadExpr(const GRBQuadExpr& expr);
     GRBQuadExpr(GRBVar var, double coeff=1.0);
     GRBQuadExpr(GRBLinExpr le);
 
@@ -846,6 +992,40 @@ class GRBQuadExpr: public GRBExpr
     void clear();
 };
 
+class GRBBatch
+{
+  private:
+
+    GRBenv   *Cenv;
+    GRBbatch *Cbatch;
+
+  public:
+
+    // constructor
+    GRBBatch(const GRBEnv& env, const std::string& batchID);
+
+    // destructor
+    ~GRBBatch();
+
+    // Attributes
+    int         get(GRB_IntAttr    attr) const;
+    std::string get(GRB_StringAttr attr) const;
+
+    void set(GRB_IntAttr    attr, int         val);
+    void set(GRB_DoubleAttr attr, double      val);
+    void set(GRB_StringAttr attr, std::string val);
+
+    // Control functions
+    void abort(void);
+    void discard(void);
+    void retry(void);
+    void update(void);
+
+    // Output functions
+    std::string getJSONSolution(void);
+    void        writeJSONSolution(std::string filename);
+};
+
 class GRBException
 {
   private:
@@ -856,7 +1036,14 @@ class GRBException
   public:
 
     GRBException(int errcode = 0);
+    GRBException(const GRBException& exc) : msg(exc.msg), error(exc.error) {}
     GRBException(std::string errmsg, int errcode = 0);
+
+    GRBException& operator=(const GRBException& exc) {
+      msg = exc.msg;
+      error = exc.error;
+      return *this;
+    }
 
     const std::string getMessage() const;
     int getErrorCode() const;
@@ -873,10 +1060,11 @@ class GRBCallback
     double*     newx;
     double*     relx;
 
-
   public:
 
-    friend void GRBModel::setCallback(GRBCallback* cb);
+    friend void GRBModel::computeIIS();
+    friend void GRBModel::optimize();
+    friend void GRBModel::optimizeasync();
     friend void GRBModel::update();
 
     GRBCallback();
@@ -901,6 +1089,7 @@ class GRBCallback
     void addLazy(const GRBTempConstr& tc);
     void addLazy(const GRBLinExpr& expr, char sense, double rhs);
     void abort();
+    void proceed();
     void stopOneMultiObj(int objnum);
 };
 
@@ -912,6 +1101,16 @@ class GRBColumn
     std::vector<GRBConstr> constrs;
 
   public:
+
+    GRBColumn() {}
+    GRBColumn(const GRBColumn &xcol) : coeffs(xcol.coeffs),
+                                       constrs(xcol.constrs) {}
+
+    GRBColumn& operator=(const GRBColumn &xcol) {
+      coeffs  = xcol.coeffs;
+      constrs = xcol.constrs;
+      return *this;
+    }
 
     unsigned int size(void) const;
     GRBConstr getConstr(int i) const;
@@ -938,7 +1137,13 @@ class GRBSOS
     friend class GRBModel;
 
     GRBSOS();
+    GRBSOS(const GRBSOS& sos) : sosRep(sos.sosRep) {}
+
+    GRBSOS& operator=(const GRBSOS& sos) { sosRep = sos.sosRep; return *this; }
+
     int get(GRB_IntAttr attr) const;
+
+    void set(GRB_IntAttr attr, int value);
 };
 
 class GRBQConstrRep;
@@ -954,12 +1159,17 @@ class GRBQConstr
     friend class GRBModel;
 
     GRBQConstr();
+    GRBQConstr(const GRBQConstr& qconstr) : qconRep(qconstr.qconRep) {}
+
+    GRBQConstr& operator=(const GRBQConstr& qconstr) { qconRep = qconstr.qconRep; return *this; }
+
     char get(GRB_CharAttr attr) const;
     int get(GRB_IntAttr attr) const;
     double get(GRB_DoubleAttr attr) const;
     std::string get(GRB_StringAttr attr) const;
 
     void set(GRB_CharAttr attr, char value);
+    void set(GRB_IntAttr attr, int value);
     void set(GRB_DoubleAttr attr, double value);
     void set(GRB_StringAttr attr, const std::string& value);
 };
@@ -978,8 +1188,11 @@ class GRBGenConstr
 
     GRBGenConstr();
     int get(GRB_IntAttr attr) const;
+    double get(GRB_DoubleAttr attr) const;
     std::string get(GRB_StringAttr attr) const;
 
+    void set(GRB_IntAttr attr, int value);
+    void set(GRB_DoubleAttr attr, double value);
     void set(GRB_StringAttr attr, const std::string& value);
 };
 
@@ -991,6 +1204,16 @@ class GRBTempConstr
     char        sense;
 
   public:
+
+    GRBTempConstr() {}
+    GRBTempConstr(const GRBTempConstr& tmp) : expr(tmp.expr),
+                                              sense(tmp.sense) {}
+
+    GRBTempConstr& operator=(const GRBTempConstr& tmp) {
+      expr  = tmp.expr;
+      sense = tmp.sense;
+      return *this;
+    }
 
     friend class GRBModel;
     friend class GRBCallback;
