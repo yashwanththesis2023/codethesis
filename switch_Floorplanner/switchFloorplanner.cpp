@@ -352,7 +352,7 @@ public:
      * all symmetrical configurations can also be created, i.e. <w,h> and <h,w>
      * but this is suppressed at the moment
      */
-    void generate_exhaustive(int block_index, int prime_index)
+    int generate_exhaustive(int block_index, int prime_index)
     {
 
         // Set all block configurations? Then print and return
@@ -380,8 +380,8 @@ public:
                 print_block_configurations();
                 best_height = min(best_height, new_height);
             }
-            printf("best bounding area  %d\n", best_height);
-            return;
+            printf("best bounding area found  %d\n", best_height);
+            return best_height;
         }
 
         block *b = block_list->at(block_index);
@@ -390,7 +390,7 @@ public:
         if (b->preplaced)
         {
             generate_exhaustive(block_index + 1, 0);
-            return;
+            return -1;
         }
 
         // all prime exponents in current block set, continue with prime 0 from the next block
@@ -398,7 +398,7 @@ public:
         {
             if (!(b->compute_width_height() > (((int) sqrt(b->area)) + 1))) // skip symmetric case
                 generate_exhaustive(block_index + 1, 0);
-            return;
+            return -1;
         }
 
         // not pre-placed module and not all prime exponents set
@@ -408,7 +408,7 @@ public:
             generate_exhaustive(block_index, prime_index + 1);
         }
     }
-    int getBoundingRectAreaNEW() {
+    double getBoundingRectAreaNEW() {
     int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
     for (auto const &v : *block_list) { 
         //cout<< endl<< v->name <<endl;        
@@ -723,7 +723,8 @@ public:
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
         int M = 0;
-        int bounding-area = 0;
+        double bounding_area = 0.0;
+        GRBVar* vars = NULL;
         for (auto const &v : *block_list)
             M += max(v->width, v->height);
 
@@ -752,7 +753,7 @@ public:
             hi = block_list->at(i - 1)->height;
             wi = block_list->at(i - 1)->width;
             m1.addConstr(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi, "c" + to_string(eq1++));
-            m1.addConstr(y[i] + wi * r[i] - hi * r[i] - yh <= -hi, "c" + to_string(eq1++));
+            m1.addConstr(y[i] - yh <= -hi, "c" + to_string(eq1++));
         }
         
         for (int i = 1; i <= block_list->size(); i++)
@@ -765,7 +766,7 @@ public:
                 wj = block_list->at(j - 1)->width;
                 m1.addConstr(x[i] + hi * r[i] - wi * r[i] - x[j] - M * p[i][j] - M * q[i][j] <= -wi, "c" + to_string(eq1++));
                 m1.addConstr(y[i] + wi * r[i] - hi * r[i] - y[j] - M * p[i][j] + M * q[i][j] <= M - hi, "c" + to_string(eq1++));
-                m1.addConstr(x[i] + hj * r[j] - wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj, "c" + to_string(eq1++));
+                m1.addConstr(x[i] - hj * r[j] - wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj, "c" + to_string(eq1++));
                 m1.addConstr(y[i] - wj * r[j] + hj * r[j] - y[j] - M * p[i][j] - M * q[i][j] >= -2*M + hj, "c" + to_string(eq1++));
             }
         }
@@ -788,17 +789,19 @@ public:
         m1.write("model_gurobi.sol");
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
         for (int i = 1; i <= block_list->size(); i++){
-            block_list->at(i - 1)->x = m1.get(x[i]);
-            //cout<<"inside updating x value ="<< cplex.getValue(x[i])<<endl;
-            block_list->at(i - 1)->y = m1.get(y[i]);
+            block_list->at(i - 1)->x = x[i].get(GRB_DoubleAttr_X);
+            block_list->at(i - 1)->y = y[i].get(GRB_DoubleAttr_X);
             //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
         }
         bounding_area = getBoundingRectAreaNEW();
-        cout<< "gurobi bounding area  " << bounding_area << endl;
-        //m1.get(GRB_DoubleAttr_ObjVal)
+        cout<< "current bounding area  " << bounding_area << endl;
+        cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
+        print_block_configurations();
         if(m1.get(GRB_IntAttr_Status) == 2)
         {return bounding_area;}
         else{return -1;}
+        //cout << x[1].get(GRB_StringAttr_VarName) << " " << x[1].get(GRB_DoubleAttr_X) << endl;
+        //cout << y[1].get(GRB_StringAttr_VarName) << " " << y[1].get(GRB_DoubleAttr_X) << endl;
     }
 #endif
 
@@ -835,6 +838,7 @@ public:
 
 int main (int argcc, char **argv)
 {
+    int value;
    // Record start time
    auto start = chrono::high_resolution_clock::now();
    //fpga_floorplan *fp = new fpga_floorplan();
@@ -858,7 +862,8 @@ int main (int argcc, char **argv)
    printf("decomposition done\n");
 
 
-   fp->generate_exhaustive(0, 0);
+   value=fp->generate_exhaustive(0, 0);
+   printf("final best bounding area %d\n",value);
 
    
    

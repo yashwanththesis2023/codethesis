@@ -408,7 +408,7 @@ public:
             generate_exhaustive(block_index, prime_index + 1);
         }
     }
-    int getBoundingRectAreaNEW() {
+    double getBoundingRectAreaNEW() {
     int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
     for (auto const &v : *block_list) { 
         //cout<< endl<< v->name <<endl;        
@@ -624,7 +624,7 @@ public:
 
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
-        int bounding_area = 0;
+        double bounding_area = 0.0;
         int M = fpga_width;
         // for (auto const &v : *block_list)
         //      M += max(v->width, v->height);
