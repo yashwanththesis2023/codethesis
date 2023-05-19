@@ -722,11 +722,11 @@ public:
         GRBModel m1 = GRBModel(env);
         // compute maximum over widths and heights of all modules
         // to have an upper bound on FPGA area height
-        int M = 0;
+        int M = max(fpga_width,fpga_height);
         double bounding_area = 0.0;
         GRBVar* vars = NULL;
-        for (auto const &v : *block_list)
-            M += max(v->width, v->height);
+        // for (auto const &v : *block_list)
+        //     M += max(v->width, v->height);
 
         int eq1 = 1; // equation number
         int hi, hj, wi, wj;
@@ -734,16 +734,16 @@ public:
         int sizeB = block_list->size() + 1;
         GRBVar yh, x[sizeB], y[sizeB], r[sizeB], p[sizeB][sizeB], q[sizeB][sizeB];
         int j;
-        yh = m1.addVar(0.0, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "y");
+        yh = m1.addVar(0, GRB_INFINITY, 0, GRB_CONTINUOUS, "y");
         for (int i = 1; i <= block_list->size(); i++)
         {
-            x[i] = m1.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x" + to_string(i));
-            r[i] = m1.addVar(0.0, 1, 0.0, GRB_INTEGER, "r" + to_string(i));
-            y[i] = m1.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y" + to_string(i));
+            x[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "x" + to_string(i));
+            r[i] = m1.addVar(0, 1, 0, GRB_INTEGER, "r" + to_string(i));
+            y[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "y" + to_string(i));
             for (j = i + 1; j <= block_list->size(); j++)
             {
-                p[i][j] = m1.addVar(0.0, 1, 0.0, GRB_INTEGER, "p" + to_string(i) + to_string(j));
-                q[i][j] = m1.addVar(0.0, 1, 0.0, GRB_INTEGER, "q" + to_string(i) + to_string(j));
+                p[i][j] = m1.addVar(0, 1, 0, GRB_INTEGER, "p" + to_string(i) + to_string(j));
+                q[i][j] = m1.addVar(0, 1, 0, GRB_INTEGER, "q" + to_string(i) + to_string(j));
             }
         }
 
@@ -766,7 +766,7 @@ public:
                 wj = block_list->at(j - 1)->width;
                 m1.addConstr(x[i] + hi * r[i] - wi * r[i] - x[j] - M * p[i][j] - M * q[i][j] <= -wi, "c" + to_string(eq1++));
                 m1.addConstr(y[i] + wi * r[i] - hi * r[i] - y[j] - M * p[i][j] + M * q[i][j] <= M - hi, "c" + to_string(eq1++));
-                m1.addConstr(x[i] - hj * r[j] - wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj, "c" + to_string(eq1++));
+                m1.addConstr(x[i] - hj * r[j] + wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj, "c" + to_string(eq1++));
                 m1.addConstr(y[i] - wj * r[j] + hj * r[j] - y[j] - M * p[i][j] - M * q[i][j] >= -2*M + hj, "c" + to_string(eq1++));
             }
         }
@@ -783,16 +783,23 @@ public:
                 r[i].set(GRB_DoubleAttr_UB, 0);
             }
         m1.setObjective(yh + 0 * x[1]);
+
         m1.update();
+
         m1.optimize();
+        m1.computeIIS();
+        // if(m1.get(GRB_IntAttr_Status) != 2)
+        // {return 1000;}
         m1.write("model_gurobi.lp");
         m1.write("model_gurobi.sol");
+
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
         for (int i = 1; i <= block_list->size(); i++){
             block_list->at(i - 1)->x = x[i].get(GRB_DoubleAttr_X);
             block_list->at(i - 1)->y = y[i].get(GRB_DoubleAttr_X);
             //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
         }
+        
         bounding_area = getBoundingRectAreaNEW();
         cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
