@@ -785,6 +785,21 @@ public:
         m1.setObjective(yh + 0 * x[1]);
 
         m1.update();
+        for (int i = 1; i <= block_list->size(); i++)
+        {
+            for (int j = i + 1; j <= block_list->size(); j++)
+            {
+                hi = block_list->at(i - 1)->height;
+                hj = block_list->at(j - 1)->height;
+                wi = block_list->at(i - 1)->width;
+                wj = block_list->at(j - 1)->width;
+                cout << "-----------" <<endl;
+                cout << "width i " << wi << endl;
+                cout << "width j " << wj << endl;
+                cout << "height i " << hi << endl;
+                cout << "height j " << hj << endl;
+            }
+        }
 
         m1.optimize();
         m1.computeIIS();
@@ -797,7 +812,8 @@ public:
         for (int i = 1; i <= block_list->size(); i++){
             block_list->at(i - 1)->x = x[i].get(GRB_DoubleAttr_X);
             block_list->at(i - 1)->y = y[i].get(GRB_DoubleAttr_X);
-            //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
+            // cout << "hi" << block_list->at(i - 1)->height << endl;
+            // cout << "wi" << block_list->at(i - 1)->width << endl;
         }
         
         bounding_area = getBoundingRectAreaNEW();
@@ -807,7 +823,7 @@ public:
         if(m1.get(GRB_IntAttr_Status) == 2)
         {return bounding_area;}
         else{return -1;}
-        //cout << x[1].get(GRB_StringAttr_VarName) << " " << x[1].get(GRB_DoubleAttr_X) << endl;
+        //cout << wi.get(GRB_StringAttr_VarName) << " " << wi.get(GRB_DoubleAttr_X) << endl;
         //cout << y[1].get(GRB_StringAttr_VarName) << " " << y[1].get(GRB_DoubleAttr_X) << endl;
     }
 #endif

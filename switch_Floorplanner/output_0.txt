@@ -1,0 +1,78 @@
+loading done
+decomposition done
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+-----------
+width i 1
+width j 1
+height i 28
+height j 20
+-----------
+width i 1
+width j 1
+height i 28
+height j 27
+-----------
+width i 1
+width j 1
+height i 28
+height j 1
+-----------
+width i 1
+width j 1
+height i 20
+height j 27
+-----------
+width i 1
+width j 1
+height i 20
+height j 1
+-----------
+width i 1
+width j 1
+height i 27
+height j 1
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 32 rows, 25 columns and 129 nonzeros
+Model fingerprint: 0x7c958d4a
+Variable types: 1 continuous, 24 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 3e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+01]
+Presolve removed 4 rows and 4 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds (0.00 work units)
+Thread count was 1 (of 128 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0        32         -         0        41         -           0s
+        4         4         4         3         3         3           0s
+
+IIS computed: 4 constraints, 3 bounds
+IIS runtime: 0.01 seconds (0.00 work units)
