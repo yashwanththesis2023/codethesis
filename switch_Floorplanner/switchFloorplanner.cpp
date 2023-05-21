@@ -696,9 +696,16 @@ public:
         IloObjective obj = IloMinimize(env, yh);
         model.add(obj);
         cplex.solve();
+        for (int i = 1; i <= block_list->size(); i++)
+         {
+             hi = block_list->at(i - 1)->height;
+             wi = block_list->at(i - 1)->width;
+             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+             
+         }
         cplex.exportModel("model_cplex.lp");
         cplex.writeSolution("model_cplex.sol");
-        
+        exit(1);
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
         for (int i = 1; i <= block_list->size(); i++){
             block_list->at(i - 1)->x = cplex.getValue(x[i]);
