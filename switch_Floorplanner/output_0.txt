@@ -10,36 +10,10 @@ Set parameter WLSAccessID
 Set parameter WLSSecret
 Set parameter LicenseID to value 2378159
 Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
------------
-width i 1
-width j 1
-height i 28
-height j 20
------------
-width i 1
-width j 1
-height i 28
-height j 27
------------
-width i 1
-width j 1
-height i 28
-height j 1
------------
-width i 1
-width j 1
-height i 20
-height j 27
------------
-width i 1
-width j 1
-height i 20
-height j 1
------------
-width i 1
-width j 1
-height i 27
-height j 1
+Block1: w=1 h=28 
+Block2: w=1 h=20 
+Block3: w=1 h=27 
+Block4: w=1 h=1 
 Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
 
 CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
@@ -57,7 +31,7 @@ Coefficient statistics:
 Presolve removed 4 rows and 4 columns
 Presolve time: 0.00s
 
-Explored 0 nodes (0 simplex iterations) in 0.00 seconds (0.00 work units)
+Explored 0 nodes (0 simplex iterations) in 0.03 seconds (0.00 work units)
 Thread count was 1 (of 128 available processors)
 
 Solution count 0

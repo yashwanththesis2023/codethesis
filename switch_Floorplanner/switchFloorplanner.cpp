@@ -785,21 +785,13 @@ public:
         m1.setObjective(yh + 0 * x[1]);
 
         m1.update();
+
         for (int i = 1; i <= block_list->size(); i++)
-        {
-            for (int j = i + 1; j <= block_list->size(); j++)
-            {
-                hi = block_list->at(i - 1)->height;
-                hj = block_list->at(j - 1)->height;
-                wi = block_list->at(i - 1)->width;
-                wj = block_list->at(j - 1)->width;
-                cout << "-----------" <<endl;
-                cout << "width i " << wi << endl;
-                cout << "width j " << wj << endl;
-                cout << "height i " << hi << endl;
-                cout << "height j " << hj << endl;
-            }
-        }
+         {
+             hi = block_list->at(i - 1)->height;
+             wi = block_list->at(i - 1)->width;
+             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+         }
 
         m1.optimize();
         m1.computeIIS();
