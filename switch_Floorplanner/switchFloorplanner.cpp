@@ -381,6 +381,9 @@ public:
                 best_height = min(best_height, new_height);
             }
             printf("best bounding area found  %d\n", best_height);
+            if(best_height<150){
+            exit(1);
+            }
             return best_height;
         }
 
@@ -609,14 +612,14 @@ public:
         IloModel model(env);
         IloCplex cplex(model);
         IloNumArray z;
-        NumVarMatrix p(env, block_list->size() + 1);
-        NumVarMatrix q(env, block_list->size() + 1);
+        NumVarMatrix p(env, block_list->size() + 2);
+        NumVarMatrix q(env, block_list->size() + 2);
         IloNumVarArray x(env);
         IloNumVarArray r(env);
         IloNumVarArray y(env);
         IloNumVar yh(env, 0.0, IloInfinity, ILOFLOAT, "y");
 
-
+        cout << "start cplex" << endl;
         x.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing1"));
         r.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing2"));
         y.add(IloNumVar(env, 0, IloInfinity, ILOINT, "Nothing3"));
@@ -629,7 +632,7 @@ public:
         // for (auto const &v : *block_list)
         //      M += max(v->width, v->height);
         //M = max(W,H)
-
+        cout << "after M" << endl;
         int eq1 = 1; // equation number
         int hi, hj, wi, wj;
 
@@ -648,24 +651,32 @@ public:
             p[i] = IloNumVarArray(env, block_list->size());
             q[i] = IloNumVarArray(env, block_list->size());
         }
+        cout << "after first for" << endl;
         for (int i = 1; i <= block_list->size(); i++)
         {
-            for (j = 1; j <= block_list->size(); j++)
-            {
+            for (int j = 1; j <= block_list->size(); j++)
+            {   
+                cout <<" i = "<< i << " j = " << j <<endl;
                 name = "p" + to_string(i) + to_string(j);
+                cout << "between p" << endl;
                 p[i][j] = IloNumVar(env, 0, 1, ILOINT, name.c_str());
+                cout << "in pq" << endl;
                 name = "q" + to_string(i) + to_string(j);
                 q[i][j] = IloNumVar(env, 0, 1, ILOINT, name.c_str());
             }
         }
+        cout << "before subject" << endl;
         // Subject To :
         for (int i = 1; i <= block_list->size(); i++)
         {
             hi = block_list->at(i - 1)->height;
             wi = block_list->at(i - 1)->width;
+            cout << hi << endl;
+            cout << wi << endl;
             model.add(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi);
             model.add(y[i] - yh <= -hi);
         }
+        cout << "after subject" << endl;
         for (int i = 1; i <= block_list->size(); i++)
         {
             for (int j = i + 1; j <= block_list->size(); j++)
@@ -680,7 +691,7 @@ public:
                 model.add(y[i] - wj * r[j] + hj * r[j] - y[j] - M * p[i][j] - M * q[i][j] >= -2 * M + hj);
             }
         }
-
+        cout << "befor x and y pairs" << endl;
         // print x y pairs of preplaced blocks and overwrite in this case rotational constraints to non-rotational
         for (int i = 1; i <= block_list->size(); i++)
             if (block_list->at(i - 1)->preplaced)
@@ -695,7 +706,10 @@ public:
 
         IloObjective obj = IloMinimize(env, yh);
         model.add(obj);
+        cout << "before solve" << endl;
         cplex.solve();
+
+        if(cplex.getStatus() == 2){
         for (int i = 1; i <= block_list->size(); i++)
          {
              hi = block_list->at(i - 1)->height;
@@ -705,7 +719,7 @@ public:
          }
         cplex.exportModel("model_cplex.lp");
         cplex.writeSolution("model_cplex.sol");
-        exit(1);
+        
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
         for (int i = 1; i <= block_list->size(); i++){
             block_list->at(i - 1)->x = cplex.getValue(x[i]);
@@ -714,11 +728,12 @@ public:
             //cout<<"inside updating y value ="<< cplex.getValue(y[i])<<endl;
         }
         bounding_area = getBoundingRectAreaNEW();
-        cout<< "bounding area  " << bounding_area << endl;
+        cout<< "bounding area  " << bounding_area << endl; 
         cout<< "height  "<< cplex.getObjValue()<<endl;
+        exit(1);
         print_block_configurations();
-        if(cplex.getStatus() == 2){return bounding_area;}
-        else{return -1;}
+        return bounding_area;}
+        else{return 1000;}
     }
 #endif
 #ifdef GUROBI_USE
@@ -749,8 +764,8 @@ public:
             y[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "y" + to_string(i));
             for (j = i + 1; j <= block_list->size(); j++)
             {
-                p[i][j] = m1.addVar(0, 1, 0, GRB_INTEGER, "p" + to_string(i) + to_string(j));
-                q[i][j] = m1.addVar(0, 1, 0, GRB_INTEGER, "q" + to_string(i) + to_string(j));
+                p[i][j] = m1.addVar(0, 1, 0, GRB_BINARY, "p" + to_string(i) + to_string(j));
+                q[i][j] = m1.addVar(0, 1, 0, GRB_BINARY, "q" + to_string(i) + to_string(j));
             }
         }
 
@@ -799,12 +814,13 @@ public:
              wi = block_list->at(i - 1)->width;
              printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
          }
-
+        
+        m1.write("model_gurobi.lp");
         m1.optimize();
-        m1.computeIIS();
+        if (m1.get(GRB_IntAttr_Status) == 2){
+        //m1.computeIIS();
         // if(m1.get(GRB_IntAttr_Status) != 2)
         // {return 1000;}
-        m1.write("model_gurobi.lp");
         m1.write("model_gurobi.sol");
 
         cout << "--------------" << __FUNCTION__ << "---------------" << endl;
@@ -819,9 +835,8 @@ public:
         cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
         print_block_configurations();
-        if(m1.get(GRB_IntAttr_Status) == 2)
-        {return bounding_area;}
-        else{return -1;}
+        return bounding_area;}
+        else{return 100000;}
         //cout << wi.get(GRB_StringAttr_VarName) << " " << wi.get(GRB_DoubleAttr_X) << endl;
         //cout << y[1].get(GRB_StringAttr_VarName) << " " << y[1].get(GRB_DoubleAttr_X) << endl;
     }
