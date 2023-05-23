@@ -15,6 +15,43 @@
 #include <stdint.h>
 #include <math.h>
 #include <climits>
+#include <chrono>
+#include <map>
+
+
+#ifdef GUROBI_USE
+#include "lib/gurobi_c++.h"
+#endif
+
+
+#ifdef LPSOLVE_USE
+#include "lib/lp_lib.h"
+#endif
+
+#ifdef CPLEX_USE
+#include <ilcplex/ilocplex.h>
+ILOSTLBEGIN
+typedef IloArray<IloNumVarArray> NumVarMatrix;
+#endif
+
+#define solver_use "define"
+
+
+#if (CPLEX_USE==1 and LPSOLVE_USE+GUROBI_USE==0)
+#define solver_use "cplex"
+#endif
+
+#if (GUROBI_USE==1 and LPSOLVE_USE+CPLEX_USE==0)
+#define solver_use "gurobi"
+#endif
+
+#if (LPSOLVE_USE==1 and CPLEX_USE+GUROBI_USE==0)
+#define solver_use "lpsolve"
+#endif
+
+#if (LPSOLVE_USE+CPLEX_USE+GUROBI_USE>=2)
+#define solver_use "Undefined"
+#endif
 
 using namespace std;
 
@@ -185,11 +222,21 @@ public:
 	int fpga_width;
 	int fpga_height;
 	vector<block*> *block_list;
+    map<string, int> solver_map;
 
-	fpga_floorplan() {
-		fpga_width = fpga_height = 0;
-		block_list = new vector<block*>();
-	}
+	fpga_floorplan()
+    {
+        fpga_width = fpga_height = 0;
+        block_list = new vector<block *>();
+        solver_map["cplex"] = 1;
+        solver_map["CPLEX"] = 1;
+        solver_map["gurobi"] = 2;
+        solver_map["GUROBI"] = 2;
+        solver_map["lp_solve"] = 3;
+        solver_map["lpsolve"] = 3;
+        solver_map["LPSOLVE"] = 3;
+        solver_map["LP_SOLVE"] = 3;
+    }
 
 	~fpga_floorplan() {
 		for (auto &v : *block_list)
@@ -271,47 +318,27 @@ public:
 	 * but this is suppressed at the moment
 	 */
 	void generate_exhaustive(int block_index, int prime_index) {
-
+        
 		// Set all block configurations? Then print and return
 		if (block_index >= block_list->size()) {
 		    print_block_configurations();
+            double objval = (this->*solver)();
+            printf("current floorplan area : %f \n", objval);
+            static int best_height = INT_MAX;
 
-			// printf("\n start evaluating the following program\n\n");
-			// print_lp(stdout);
 
-			// printf("\nstarting lpsolve\n\n");
-			// FILE *tmp = fopen("/tmp/lp.txt", "w");
-			// print_lp(tmp);
-			// fclose(tmp);
-
-			// start lp_solve
-			// FILE *pipe;
-			// char buf[1000];
-			// pipe = popen("/bin/lp_solve /tmp/lp.txt", "r");
-			// print_lp(pipe);
-
-			// // find best floorplan (width the smalles height)
-			// static int best_height = INT_MAX;
-			// char *ptr;
-			// while (fgets(buf, sizeof buf, pipe))
-			// 	if (startswidth(buf, "Value of objective function:")) {
-			// 		printf("%s", buf);
-			// 		ptr = strtok(buf, " ");
-			// 		ptr = strtok(NULL, " ");
-			// 		ptr = strtok(NULL, " ");
-			// 		ptr = strtok(NULL, " ");
-			// 		ptr = strtok(NULL, " ");
-			// 		int new_height = atoi(ptr);
-			// 		if (new_height < best_height) {
-			// 			print_block_configurations();
-			// 			best_height = min(best_height, atoi(ptr));
-			// 		}
-			// 	}
-			// pclose(pipe);
-
-			// printf("best floor plan found with the minimal height of %d\n", best_height);
-			 return;
-		}
+            char *ptr;
+            int new_height = (int) objval;
+            if (new_height < best_height)
+            {
+                print_block_configurations();
+                best_height = min(best_height, new_height);
+            }
+            printf("best bounding area found  %d\n", best_height);
+            return;
+            }
+			 
+		
 
 		block *b = block_list->at(block_index);
 
@@ -334,7 +361,24 @@ public:
 			generate_exhaustive(block_index, prime_index + 1);
 		}
 	}
-    
+    double getBoundingRectAreaNEW() {
+    int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
+    for (auto const &v : *block_list) { 
+        //cout<< endl<< v->name <<endl;        
+        int x = v->x, y = v->y, width = v->width, height = v->height;
+        //cout<<"updated in mbr"<<endl;
+        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+        
+        min_x = min(min_x, x);
+        max_x = max(max_x, x + width);
+        min_y = min(min_y, y);
+        max_y = max(max_y, y + height);
+    }
+    cout<<endl;
+    printf("min_x = %d, max_x  = %d, min_y = %d, max_y = %d\n",min_x,max_x,min_y,max_y);
+    return (max_x - min_x) * (max_y - min_y);
+    }
+
 
 	void print() {
 		printf("Outline/FPGA width: %d height: %d\n", fpga_width, fpga_height);
@@ -426,25 +470,180 @@ public:
 		fprintf(f, "\n");
 
 	}
+#ifdef GUROBI_USE
+    double gurobi()
+    {
+        block *b;
+        GRBEnv env = GRBEnv();
+        GRBModel m1 = GRBModel(env);
+        // compute maximum over widths and heights of all modules
+        // to have an upper bound on FPGA area height
+        int M = max(fpga_width,fpga_height);
+        double bounding_area = 0.0;
+        GRBVar* vars = NULL;
+        // for (auto const &v : *block_list)
+        //     M += max(v->width, v->height);
+
+        int eq1 = 1; // equation number
+        int hi, hj, wi, wj;
+        
+        int sizeB = block_list->size() + 1;
+        GRBVar yh, x[sizeB], y[sizeB], r[sizeB], p[sizeB][sizeB], q[sizeB][sizeB];
+        int j;
+        yh = m1.addVar(0, GRB_INFINITY, 0, GRB_CONTINUOUS, "y");
+        for (int i = 1; i <= block_list->size(); i++)
+        {
+            x[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "x" + to_string(i));
+            r[i] = m1.addVar(0, 1, 0, GRB_INTEGER, "r" + to_string(i));
+            y[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "y" + to_string(i));
+            for (j = i + 1; j <= block_list->size(); j++)
+            {
+                p[i][j] = m1.addVar(0, 1, 0, GRB_BINARY, "p" + to_string(i) + to_string(j));
+                q[i][j] = m1.addVar(0, 1, 0, GRB_BINARY, "q" + to_string(i) + to_string(j));
+            }
+        }
+
+        // Subject To :
+        for (int i = 1; i <= block_list->size(); i++)
+        {
+            hi = block_list->at(i - 1)->height;
+            wi = block_list->at(i - 1)->width;
+            m1.addConstr(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi, "c" + to_string(eq1++));
+            m1.addConstr(y[i] - yh <= -hi, "c" + to_string(eq1++));
+        }
+        
+        for (int i = 1; i <= block_list->size(); i++)
+        {
+            for (int j = i + 1; j <= block_list->size(); j++)
+            {
+                hi = block_list->at(i - 1)->height;
+                hj = block_list->at(j - 1)->height;
+                wi = block_list->at(i - 1)->width;
+                wj = block_list->at(j - 1)->width;
+                m1.addConstr(x[i] + hi * r[i] - wi * r[i] - x[j] - M * p[i][j] - M * q[i][j] <= -wi, "c" + to_string(eq1++));
+                m1.addConstr(y[i] + wi * r[i] - hi * r[i] - y[j] - M * p[i][j] + M * q[i][j] <= M - hi, "c" + to_string(eq1++));
+                m1.addConstr(x[i] - hj * r[j] + wj * r[j] - x[j] - M * p[i][j] + M * q[i][j] >= -M + wj, "c" + to_string(eq1++));
+                m1.addConstr(y[i] - wj * r[j] + hj * r[j] - y[j] - M * p[i][j] - M * q[i][j] >= -2*M + hj, "c" + to_string(eq1++));
+            }
+        }
+
+        // print x y pairs of preplaced blocks and overwrite in this case rotational constraints to non-rotational
+        for (int i = 1; i <= block_list->size(); i++)
+            if (block_list->at(i - 1)->preplaced)
+            {
+                x[i].set(GRB_DoubleAttr_LB, block_list->at(i - 1)->x);
+                x[i].set(GRB_DoubleAttr_UB, block_list->at(i - 1)->x);
+                y[i].set(GRB_DoubleAttr_LB, block_list->at(i - 1)->y);
+                y[i].set(GRB_DoubleAttr_UB, block_list->at(i - 1)->y);
+                r[i].set(GRB_DoubleAttr_LB, 0);
+                r[i].set(GRB_DoubleAttr_UB, 0);
+            }
+        m1.setObjective(yh + 0 * x[1]);
+
+        m1.update();
+
+        for (int i = 1; i <= block_list->size(); i++)
+         {
+             hi = block_list->at(i - 1)->height;
+             wi = block_list->at(i - 1)->width;
+             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+         }
+        
+        m1.write("model_gurobi.lp");
+        m1.optimize();
+        if (m1.get(GRB_IntAttr_Status) == 2){
+        //m1.computeIIS();
+        // if(m1.get(GRB_IntAttr_Status) != 2)
+        // {return 1000;}
+        m1.write("model_gurobi.sol");
+
+        cout << "--------------" << __FUNCTION__ << "---------------" << endl;
+        for (int i = 1; i <= block_list->size(); i++){
+            block_list->at(i - 1)->x = x[i].get(GRB_DoubleAttr_X);
+            block_list->at(i - 1)->y = y[i].get(GRB_DoubleAttr_X);
+            // cout << "hi" << block_list->at(i - 1)->height << endl;
+            // cout << "wi" << block_list->at(i - 1)->width << endl;
+        }
+        
+        bounding_area = getBoundingRectAreaNEW();
+        cout<< "current bounding area  " << bounding_area << endl;
+        cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
+        print_block_configurations();
+        return bounding_area;}
+        else{return 100000;}
+
+    }
+#endif
+
+void solverCheck(string name)
+    {
+        switch(solver_map[name])
+        {
+#ifdef CPLEX_USE
+        case 1:
+            this->solver = &fpga_floorplan::cplex;
+            break;
+#endif
+#ifdef GUROBI_USE
+        case 2:
+            this->solver = &fpga_floorplan::gurobi;
+            break;
+#endif
+#ifdef LPSOLVE_USE 
+        case 3:
+            this->solver = &fpga_floorplan::lp_solve;
+            break;
+#endif
+        default:
+            cout << "solver not found or not defined" << endl;
+            exit(0);
+        }
+
+    }
+
+    double (fpga_floorplan::*solver)();
+
 };
+
 
 int main(int argcc, char** argv) {
 
-	fpga_floorplan *fp = new fpga_floorplan();
-	if (argcc == 1)
-		fp->load(NULL);
-	else
-		fp->load(argv[1]);
+   // Record start time
+   auto start = chrono::high_resolution_clock::now();
+   //fpga_floorplan *fp = new fpga_floorplan();
+   fpga_floorplan *fp = new fpga_floorplan();
 
-	printf("loading done\n");
 
-	fp->decompose();
+   if (argcc == 1)
+      fp->load(NULL);
+   else
+      fp->load(argv[1]);
 
-	printf("decomposition done\n");
+   printf("loading done\n");
 
-	fp->generate_exhaustive(0, 0);
+   if (argcc == 3)
+      fp->solverCheck(argv[2]);
+   else
+      fp->solverCheck(solver_use);
 
-	// return OK
-	return (0);
+   fp->decompose();
+
+   printf("decomposition done\n");
+
+
+   fp->generate_exhaustive(0, 0);
+   //printf("final best bounding area %d\n",value);
+
+   
+   
+   // Record end time
+   auto finish = chrono::high_resolution_clock::now();
+
+   chrono::duration<double> elapsed = finish - start;
+
+
+   cout << "Elapsed time: " << elapsed.count() <<endl; 
+
+    return (0);
 
 }
