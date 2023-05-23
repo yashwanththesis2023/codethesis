@@ -62,7 +62,7 @@ endif
 
 
 all:	
-	$(CPP) $(LPSOLVE) $(GUROBI) $(CPLEX) $(CPLEXINC) $(CPLEXDIRS) -o $(CODE_FILE) $(CODE_FILE).cpp $(CPLEXFLAGS) $(GUROBILIB) -ldl $(lpsolveDIR)
+	$(CPP) $(LPSOLVE) $(GUROBI) $(CPLEX) $(CPLEXINC) $(CPLEXDIRS) -o $(CODE) $(CODE).cpp $(CPLEXFLAGS) $(GUROBILIB) -ldl $(lpsolveDIR)
 
 clean:
 	rm  $(CODE)

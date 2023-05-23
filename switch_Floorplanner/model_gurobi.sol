@@ -1,17 +1,26 @@
-# Objective value = 32
-y 32
-x1 0
+# Objective value = 22
+y 22
+x1 1
 r1 0
 y1 0
-p12 0
+p12 1
 q12 0
 p13 0
 q13 0
-x2 4
+p14 0
+q14 0
+x2 0
 r2 0
-y2 12
-p23 1
+y2 0
+p23 0
 q23 0
-x3 1
+p24 0
+q24 0
+x3 3
 r3 0
-y3 12
+y3 0
+p34 1
+q34 0
+x4 2
+r4 0
+y4 0

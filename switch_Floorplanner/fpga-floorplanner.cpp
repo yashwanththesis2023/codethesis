@@ -7,9 +7,9 @@
 //             : of rectangular soft module blocks
 //============================================================================
 
-#include <fstream>
+//#include <fstream>
 #include <iostream>
-#include <sstream>
+//#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +17,8 @@
 #include <stdint.h>
 #include <math.h>
 #include <map>
-#include <bits/stdc++.h>
+#include <climits>
+//#include <bits/stdc++.h>
 #include <chrono>  // for high_resolution_clock
 
 
@@ -337,6 +338,14 @@ public:
 
 			
             double objval = (this->*solver)();
+			//double objval = 100;
+			int hi, hj, wi, wj;
+			for (int i = 1; i <= block_list->size(); i++)
+			{
+				hi = block_list->at(i - 1)->height;
+				wi = block_list->at(i - 1)->width;
+				printf("in generative  %s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+			}
 
             printf("floorplan height : %f \n", objval);
 
@@ -405,23 +414,23 @@ public:
 			generate_exhaustive(block_index, prime_index + 1);
 		}
 	}
-	double getBoundingRectAreaNEW() {
-    int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
-    for (auto const &v : *block_list) { 
-        //cout<< endl<< v->name <<endl;        
-        int x = v->x, y = v->y, width = v->width, height = v->height;
-        //cout<<"updated in mbr"<<endl;
-        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+	// double getBoundingRectAreaNEW() {
+    // int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
+    // for (auto const &v : *block_list) { 
+    //     //cout<< endl<< v->name <<endl;        
+    //     int x = v->x, y = v->y, width = v->width, height = v->height;
+    //     //cout<<"updated in mbr"<<endl;
+    //     printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
         
-        min_x = min(min_x, x);
-        max_x = max(max_x, x + width);
-        min_y = min(min_y, y);
-        max_y = max(max_y, y + height);
-    }
-    cout<<endl;
-    printf("min_x = %d, max_x  = %d, min_y = %d, max_y = %d\n",min_x,max_x,min_y,max_y);
-    return (max_x - min_x) * (max_y - min_y);
-	}
+    //     min_x = min(min_x, x);
+    //     max_x = max(max_x, x + width);
+    //     min_y = min(min_y, y);
+    //     max_y = max(max_y, y + height);
+    // }
+    // cout<<endl;
+    // printf("min_x = %d, max_x  = %d, min_y = %d, max_y = %d\n",min_x,max_x,min_y,max_y);
+    // return (max_x - min_x) * (max_y - min_y);
+	// }
 	
 
 	void print() {
@@ -440,6 +449,13 @@ public:
 #ifdef GUROBI_USE
     double gurobi()
     {
+		int hi, hj, wi, wj;
+		for (int i = 1; i <= block_list->size(); i++)
+         {
+             hi = block_list->at(i - 1)->height;
+             wi = block_list->at(i - 1)->width;
+             printf("starting gurobi  %s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+         }
         block *b;
         GRBEnv env = GRBEnv();
         GRBModel m1 = GRBModel(env);
@@ -452,12 +468,13 @@ public:
         //     M += max(v->width, v->height);
 
         int eq1 = 1; // equation number
-        int hi, hj, wi, wj;
+        
         
         int sizeB = block_list->size() + 1;
         GRBVar yh, x[sizeB], y[sizeB], r[sizeB], p[sizeB][sizeB], q[sizeB][sizeB];
         int j;
         yh = m1.addVar(0, GRB_INFINITY, 0, GRB_CONTINUOUS, "y");
+
         for (int i = 1; i <= block_list->size(); i++)
         {
             x[i] = m1.addVar(0, GRB_INFINITY, 0, GRB_INTEGER, "x" + to_string(i));
@@ -471,19 +488,23 @@ public:
         }
 
         // Subject To :
-        for (int i = 1; i <= block_list->size(); i++)
-        {
-            hi = block_list->at(i - 1)->height;
-            wi = block_list->at(i - 1)->width;
-            m1.addConstr(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi, "c" + to_string(eq1++));
-            m1.addConstr(y[i] - yh <= -hi, "c" + to_string(eq1++));
-        }
+        // for (int i = 1; i <= block_list->size(); i++)
+        // {
+        //     hi = block_list->at(i - 1)->height;
+        //     wi = block_list->at(i - 1)->width;
+        //     m1.addConstr(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi, "c" + to_string(eq1++));
+        //     m1.addConstr(y[i] - yh <= -hi, "c" + to_string(eq1++));
+        // }
         
         for (int i = 1; i <= block_list->size(); i++)
         {
+			hi = block_list->at(i - 1)->height;
+            wi = block_list->at(i - 1)->width;
+            m1.addConstr(x[i] + hi * r[i] - wi * r[i] <= fpga_width - wi, "c" + to_string(eq1++));
+            m1.addConstr(y[i] - yh <= -hi, "c" + to_string(eq1++));
             for (int j = i + 1; j <= block_list->size(); j++)
             {
-                hi = block_list->at(i - 1)->height;
+                //hi = block_list->at(i - 1)->height;
                 hj = block_list->at(j - 1)->height;
                 wi = block_list->at(i - 1)->width;
                 wj = block_list->at(j - 1)->width;
@@ -532,11 +553,11 @@ public:
             // cout << "wi" << block_list->at(i - 1)->width << endl;
         }
         
-        bounding_area = getBoundingRectAreaNEW();
-        cout<< "current bounding area  " << bounding_area << endl;
+        //bounding_area = getBoundingRectAreaNEW();
+        //cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
         print_block_configurations();
-        return bounding_area;}
+        return m1.get(GRB_DoubleAttr_ObjVal);}
         else{return 100000;}
         //cout << wi.get(GRB_StringAttr_VarName) << " " << wi.get(GRB_DoubleAttr_X) << endl;
         //cout << y[1].get(GRB_StringAttr_VarName) << " " << y[1].get(GRB_DoubleAttr_X) << endl;

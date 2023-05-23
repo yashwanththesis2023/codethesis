@@ -362,84 +362,148 @@ public:
      * all symmetrical configurations can also be created, i.e. <w,h> and <h,w>
      * but this is suppressed at the moment
      */
-    int generate_exhaustive(int block_index, int prime_index)
-    {
+    int generate_exhaustive(int block_index, int prime_index) {
 
-        // Set all block configurations? Then print and return
-        if (block_index >= block_list->size())
-        {   
-            print();
-            //print_block_configurations();
-            printf("\n start evaluating the following program\n\n");
-            printf("\nstarting solver\n\n");
+		// Set all block configurations? Then print and return
+		if (block_index >= block_list->size()) {
+		    print_block_configurations();
 
-            // start solver
+			// printf("\n start evaluating the following program\n\n");
+			// print_lp(stdout);
 
-            double objval = (this->*solver)();
+			// printf("\nstarting lpsolve\n\n");
+			// FILE *tmp = fopen("/tmp/lp.txt", "w");
+			// print_lp(tmp);
+			// fclose(tmp);
 
-            printf("current floorplan area : %f \n", objval);
+			// start lp_solve
+			// FILE *pipe;
+			// char buf[1000];
+			// pipe = popen("/bin/lp_solve /tmp/lp.txt", "r");
+			// print_lp(pipe);
 
-            // find best floorplan (width the smalles height)
-            static int best_height = INT_MAX;
+			// // find best floorplan (width the smalles height)
+			// static int best_height = INT_MAX;
+			// char *ptr;
+			// while (fgets(buf, sizeof buf, pipe))
+			// 	if (startswidth(buf, "Value of objective function:")) {
+			// 		printf("%s", buf);
+			// 		ptr = strtok(buf, " ");
+			// 		ptr = strtok(NULL, " ");
+			// 		ptr = strtok(NULL, " ");
+			// 		ptr = strtok(NULL, " ");
+			// 		ptr = strtok(NULL, " ");
+			// 		int new_height = atoi(ptr);
+			// 		if (new_height < best_height) {
+			// 			print_block_configurations();
+			// 			best_height = min(best_height, atoi(ptr));
+			// 		}
+			// 	}
+			// pclose(pipe);
+
+			// printf("best floor plan found with the minimal height of %d\n", best_height);
+			 return 10;
+		}
+
+		block *b = block_list->at(block_index);
+
+		// is the block pre-placed, then only one geometry is possible
+		if (b->preplaced) {
+			generate_exhaustive(block_index + 1, 0);
+			return -1;
+		}
+
+		// all prime exponents in current block set, continue with prime 0 from the next block
+		if (prime_index >= b->primes_len) {
+			if (!(b->compute_width_height() > (((int) sqrt(b->area)) + 1))) // skip symmetric case
+				generate_exhaustive(block_index + 1, 0);
+			return -1;
+		}
+
+		// not pre-placed module and not all prime exponents set
+		for (int i = 0; i <= b->exponents[prime_index]; i++) {
+			b->tmp_exponents[prime_index] = i;
+			generate_exhaustive(block_index, prime_index + 1);
+		}
+	}
+//     int generate_exhaustive(int block_index, int prime_index)
+//     {
+
+//         // Set all block configurations? Then print and return
+//         if (block_index >= block_list->size())
+//         {   
+//             print();
+//             //print_block_configurations();
+//             printf("\n start evaluating the following program\n\n");
+//             printf("\nstarting solver\n\n");
+
+//             // start solver
+
+//             double objval = (this->*solver)();
+
+//             printf("current floorplan area : %f \n", objval);
+
+//             // find best floorplan (width the smalles height)
+//             static int best_height = INT_MAX;
 
 
-            char *ptr;
-            int new_height = (int) objval;
-            //while (fgets(buf, sizeof buf, pipe))
-            if (new_height < best_height)
-            {
-                print_block_configurations();
-                best_height = min(best_height, new_height);
-            }
-            printf("best bounding area found  %d\n", best_height);
-            if(best_height<184){
-            exit(1);
-            }
-            return best_height;
-        }
+//             char *ptr;
+//             int new_height = (int) objval;
+//             //while (fgets(buf, sizeof buf, pipe))
+//             if (new_height < best_height)
+//             {
+//                 print_block_configurations();
+//                 best_height = min(best_height, new_height);
+//             }
+//             printf("best bounding area found  %d\n", best_height);
+//             if(best_height<184){
+//             exit(1);
+//             }
+//             return best_height;
+//         }
 
-        block *b = block_list->at(block_index);
+//         block *b = block_list->at(block_index);
 
-        // is the block pre-placed, then only one geometry is possible
-        if (b->preplaced)
-        {
-            generate_exhaustive(block_index + 1, 0);
-            return -1;
-        }
+//         // is the block pre-placed, then only one geometry is possible
+//         if (b->preplaced)
+//         {
+//             generate_exhaustive(block_index + 1, 0);
+//             return -1;
+//         }
 
-        // all prime exponents in current block set, continue with prime 0 from the next block
-        if (prime_index >= b->primes_len)
-        {
-            if (!(b->compute_width_height() > (((int) sqrt(b->area)) + 1))) // skip symmetric case
-                generate_exhaustive(block_index + 1, 0);
-            return -1;
-        }
-        memset(b->tmp_exponents, 0, b->primes_len * sizeof(pint)); // Initialize tmp_exponents to 0
-        // not pre-placed module and not all prime exponents set
-        for (int i = 0; i <= b->exponents[prime_index]; i++)
-        {
-            b->tmp_exponents[prime_index] = i;
-            printf( "temp exponent =  %d, i = %d ",b->tmp_exponents[prime_index],i);
-            generate_exhaustive(block_index, prime_index + 1);
-        }
-    }
-    double getBoundingRectAreaNEW() {
-    int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
-    for (auto const &v : *block_list) { 
-        //cout<< endl<< v->name <<endl;        
-        int x = v->x, y = v->y, width = v->width, height = v->height;
-        //cout<<"updated in mbr"<<endl;
-        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+//         // all prime exponents in current block set, continue with prime 0 from the next block
+//         if (prime_index >= b->primes_len)
+//         {
+//             if (!(b->compute_width_height() > (((int) sqrt(b->area)) + 1))) // skip symmetric case
+//                 generate_exhaustive(block_index + 1, 0);
+//             return -1;
+//         }
+//         memset(b->tmp_exponents, 0, b->primes_len * sizeof(pint)); // Initialize tmp_exponents to 0
+//         // not pre-placed module and not all prime exponents set
+//         for (int i = 0; i <= b->exponents[prime_index]; i++)
+//         {
+//             b->tmp_exponents[prime_index] = i;
+//             printf( "temp exponent =  %d, i = %d ",b->tmp_exponents[prime_index],i);
+//             generate_exhaustive(block_index, prime_index + 1);
+//         }
+//     }
+//     double getBoundingRectAreaNEW() {
+//     int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
+//     for (auto const &v : *block_list) { 
+//         //cout<< endl<< v->name <<endl;        
+//         int x = v->x, y = v->y, width = v->width, height = v->height;
+//         //cout<<"updated in mbr"<<endl;
+//         printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
         
-        min_x = min(min_x, x);
-        max_x = max(max_x, x + width);
-        min_y = min(min_y, y);
-        max_y = max(max_y, y + height);
-    }
-    cout<<endl;
-    printf("min_x = %d, max_x  = %d, min_y = %d, max_y = %d\n",min_x,max_x,min_y,max_y);
-    return (max_x - min_x) * (max_y - min_y);
-}
+//         min_x = min(min_x, x);
+//         max_x = max(max_x, x + width);
+//         min_y = min(min_y, y);
+//         max_y = max(max_y, y + height);
+//     }
+//     cout<<endl;
+//     printf("min_x = %d, max_x  = %d, min_y = %d, max_y = %d\n",min_x,max_x,min_y,max_y);
+//     return (max_x - min_x) * (max_y - min_y);
+// }
 
     void print()
     {
@@ -844,11 +908,11 @@ public:
             // cout << "wi" << block_list->at(i - 1)->width << endl;
         }
         
-        bounding_area = getBoundingRectAreaNEW();
-        cout<< "current bounding area  " << bounding_area << endl;
+        //bounding_area = getBoundingRectAreaNEW();
+        //cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
         print_block_configurations();
-        return bounding_area;}
+        return m1.get(GRB_DoubleAttr_ObjVal);}
         else{return 100000;}
         //cout << wi.get(GRB_StringAttr_VarName) << " " << wi.get(GRB_DoubleAttr_X) << endl;
         //cout << y[1].get(GRB_StringAttr_VarName) << " " << y[1].get(GRB_DoubleAttr_X) << endl;
