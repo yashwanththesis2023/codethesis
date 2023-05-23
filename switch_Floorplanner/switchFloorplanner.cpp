@@ -180,6 +180,7 @@ public:
 
         pint out[100];
         primes_len = decompose(area, out);
+        cout << "primes_len " << primes_len << endl;
         pint lprimes[100];
         pint lexponents[100];
 
@@ -196,13 +197,13 @@ public:
             }
         primes_len = j + 1;
 
-        primes = (pint *) malloc(primes_len * sizeof(pint));
+        primes = (pint*) malloc(primes_len * sizeof(pint));
         memcpy(primes, lprimes, primes_len * sizeof(pint));
 
-        exponents = (pint *) malloc(primes_len * sizeof(pint));
+        exponents = (pint*) malloc(primes_len * sizeof(pint));
         memcpy(exponents, lexponents, primes_len * sizeof(pint));
 
-        tmp_exponents = (pint *) malloc(primes_len * sizeof(pint));
+        tmp_exponents = (pint*) malloc(primes_len * sizeof(pint));
     }
 
     void print()
@@ -225,16 +226,25 @@ public:
         if (!preplaced)
         {
             width = 1;
+            
+
             for (int i = 0; i < primes_len; i++)
+            {
+                printf("primes = %d, tmp_exponents = %d", primes[i], tmp_exponents[i]);
                 width *= (int) pow(primes[i], tmp_exponents[i]);
+                cout << "in compute width()" << width << endl;
+            }
+
             height = area / width;
         }
         return width;
     }
 
+
+
     void print_block_configurations()
     {
-        //compute_width_height();
+        compute_width_height();
         printf("%s x=%d y=%d w=%d h=%d  ", name, x,y,width, height);
     }
 };
@@ -357,7 +367,8 @@ public:
 
         // Set all block configurations? Then print and return
         if (block_index >= block_list->size())
-        {
+        {   
+            print();
             //print_block_configurations();
             printf("\n start evaluating the following program\n\n");
             printf("\nstarting solver\n\n");
@@ -381,7 +392,7 @@ public:
                 best_height = min(best_height, new_height);
             }
             printf("best bounding area found  %d\n", best_height);
-            if(best_height<150){
+            if(best_height<184){
             exit(1);
             }
             return best_height;
@@ -403,11 +414,12 @@ public:
                 generate_exhaustive(block_index + 1, 0);
             return -1;
         }
-
+        memset(b->tmp_exponents, 0, b->primes_len * sizeof(pint)); // Initialize tmp_exponents to 0
         // not pre-placed module and not all prime exponents set
         for (int i = 0; i <= b->exponents[prime_index]; i++)
         {
             b->tmp_exponents[prime_index] = i;
+            printf( "temp exponent =  %d, i = %d ",b->tmp_exponents[prime_index],i);
             generate_exhaustive(block_index, prime_index + 1);
         }
     }
@@ -709,7 +721,7 @@ public:
         cout << "before solve" << endl;
         cplex.solve();
 
-        if(cplex.getStatus() == 2){
+        
         for (int i = 1; i <= block_list->size(); i++)
          {
              hi = block_list->at(i - 1)->height;
@@ -730,10 +742,11 @@ public:
         bounding_area = getBoundingRectAreaNEW();
         cout<< "bounding area  " << bounding_area << endl; 
         cout<< "height  "<< cplex.getObjValue()<<endl;
-        exit(1);
+        print();
         print_block_configurations();
+        if(cplex.getStatus() == 2){
         return bounding_area;}
-        else{return 1000;}
+        else{return -1;}
     }
 #endif
 #ifdef GUROBI_USE

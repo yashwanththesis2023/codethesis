@@ -28,7 +28,7 @@ CPP      = g++ -m64 -O -fPIC -fno-strict-aliasing -fexceptions -DNDEBUG -DIL_STD
 
 
 CODE=switchFloorplanner
-CODE_FILE= switchFloorplanner_BA_main
+CODE_FILE= fpga-floorplanner
 
 #--------------------------------------------------------------------------
 ifeq ($(ALL_USE), 1)
@@ -62,7 +62,7 @@ endif
 
 
 all:	
-	$(CPP) $(LPSOLVE) $(GUROBI) $(CPLEX) $(CPLEXINC) $(CPLEXDIRS) -o $(CODE) $(CODE).cpp $(CPLEXFLAGS) $(GUROBILIB) -ldl $(lpsolveDIR)
+	$(CPP) $(LPSOLVE) $(GUROBI) $(CPLEX) $(CPLEXINC) $(CPLEXDIRS) -o $(CODE_FILE) $(CODE_FILE).cpp $(CPLEXFLAGS) $(GUROBILIB) -ldl $(lpsolveDIR)
 
 clean:
 	rm  $(CODE)

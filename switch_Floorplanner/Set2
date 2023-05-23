@@ -1,9 +1,5 @@
-Outline: 30 50
-Block1 15
-Block2 2
-Block3 2
-Block4 1
-Block5 20
-Block6 22
-Block7 20
-Block8 3
+Outline: 10 10
+block1 48
+block2 40
+# preplaced block x y width height
+block3 0 0 5 7

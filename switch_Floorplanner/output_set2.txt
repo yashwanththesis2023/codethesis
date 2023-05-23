@@ -1,0 +1,129 @@
+loading done
+primes_len2
+primes_len1
+primes_len1
+primes_len1
+primes_len1
+primes_len1
+primes_len1
+decomposition done
+temp exponent =  0, i = 0 temp exponent =  0, i = 0 primes = 2, tmp_exponents = 0in compute width()1
+primes = 3, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 5, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 5, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 3, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 3, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 2, tmp_exponents = 0in compute width()1
+temp exponent =  0, i = 0 primes = 2, tmp_exponents = 0in compute width()1
+Outline/FPGA width: 100 height: 100
+name: BK1 area: 6 x: 0 y: 0 width: 1 height: 6 pre-placed: 0
+prime factor decomposition: 2^1 3^1 
+prime factor decomposit[2]: 2^0 3^0 
+
+name: BK2 area: 5 x: 0 y: 0 width: 1 height: 5 pre-placed: 0
+prime factor decomposition: 5^1 
+prime factor decomposit[2]: 5^0 
+
+name: BK3 area: 5 x: 0 y: 0 width: 1 height: 5 pre-placed: 0
+prime factor decomposition: 5^1 
+prime factor decomposit[2]: 5^0 
+
+name: BK4 area: 3 x: 0 y: 0 width: 1 height: 3 pre-placed: 0
+prime factor decomposition: 3^1 
+prime factor decomposit[2]: 3^0 
+
+name: BK5 area: 3 x: 0 y: 0 width: 1 height: 3 pre-placed: 0
+prime factor decomposition: 3^1 
+prime factor decomposit[2]: 3^0 
+
+name: BK6 area: 2 x: 0 y: 0 width: 1 height: 2 pre-placed: 0
+prime factor decomposition: 2^1 
+prime factor decomposit[2]: 2^0 
+
+name: BK7 area: 2 x: 0 y: 0 width: 1 height: 2 pre-placed: 0
+prime factor decomposition: 2^1 
+prime factor decomposit[2]: 2^0 
+
+
+ start evaluating the following program
+
+
+starting solver
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2378159
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+BK1: w=1 h=6 
+BK2: w=1 h=5 
+BK3: w=1 h=5 
+BK4: w=1 h=3 
+BK5: w=1 h=3 
+BK6: w=1 h=2 
+BK7: w=1 h=2 
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (linux64)
+
+CPU model: AMD EPYC 7763 64-Core Processor, instruction set [SSE2|AVX|AVX2]
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+
+Academic license - for non-commercial use only - registered to yashwant@mail.uni-paderborn.de
+Optimize a model with 98 rows, 64 columns and 448 nonzeros
+Model fingerprint: 0xd4ae59b0
+Variable types: 1 continuous, 63 integer (42 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+02]
+Found heuristic solution: objective 9.0000000
+Presolve time: 0.00s
+Presolved: 98 rows, 64 columns, 448 nonzeros
+Variable types: 0 continuous, 64 integer (49 binary)
+
+Root relaxation: objective 6.000000e+00, 21 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                       6.0000000    6.00000  0.00%     -    0s
+     0     0    6.00000    0   21    6.00000    6.00000  0.00%     -    0s
+
+Explored 1 nodes (21 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 32 (of 128 available processors)
+
+Solution count 2: 6 9 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 6.000000000000e+00, best bound 6.000000000000e+00, gap 0.0000%
+--------------gurobi---------------
+BK1, x = 0, y  = 0, width = 1, height = 6
+BK2, x = 4, y  = 0, width = 1, height = 5
+BK3, x = 1, y  = 1, width = 1, height = 5
+BK4, x = 3, y  = 3, width = 1, height = 3
+BK5, x = 3, y  = 0, width = 1, height = 3
+BK6, x = 2, y  = 1, width = 1, height = 2
+BK7, x = 1, y  = 0, width = 1, height = 2
+
+min_x = 0, max_x  = 5, min_y = 0, max_y = 6
+current bounding area  30
+height  6
+primes = 2, tmp_exponents = 0in compute width()1
+primes = 3, tmp_exponents = 0in compute width()1
+BK1 x=0 y=0 w=1 h=6  primes = 5, tmp_exponents = 0in compute width()1
+BK2 x=4 y=0 w=1 h=5  primes = 5, tmp_exponents = 0in compute width()1
+BK3 x=1 y=1 w=1 h=5  primes = 3, tmp_exponents = 0in compute width()1
+BK4 x=3 y=3 w=1 h=3  primes = 3, tmp_exponents = 0in compute width()1
+BK5 x=3 y=0 w=1 h=3  primes = 2, tmp_exponents = 0in compute width()1
+BK6 x=2 y=1 w=1 h=2  primes = 2, tmp_exponents = 0in compute width()1
+BK7 x=1 y=0 w=1 h=2  
+current floorplan area : 30.000000 
+primes = 2, tmp_exponents = 0in compute width()1
+primes = 3, tmp_exponents = 0in compute width()1
+BK1 x=0 y=0 w=1 h=6  primes = 5, tmp_exponents = 0in compute width()1
+BK2 x=4 y=0 w=1 h=5  primes = 5, tmp_exponents = 0in compute width()1
+BK3 x=1 y=1 w=1 h=5  primes = 3, tmp_exponents = 0in compute width()1
+BK4 x=3 y=3 w=1 h=3  primes = 3, tmp_exponents = 0in compute width()1
+BK5 x=3 y=0 w=1 h=3  primes = 2, tmp_exponents = 0in compute width()1
+BK6 x=2 y=1 w=1 h=2  primes = 2, tmp_exponents = 0in compute width()1
+BK7 x=1 y=0 w=1 h=2  
+best bounding area found  30

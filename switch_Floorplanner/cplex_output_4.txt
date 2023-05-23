@@ -1,0 +1,366 @@
+loading done
+decomposition done
+primes = 5, tmp_exponents = 0in compute width()1
+primes = 5, tmp_exponents = 0in compute width()1
+primes = 2, tmp_exponents = 0in compute width()1
+primes = 3, tmp_exponents = 0in compute width()1
+primes = 5, tmp_exponents = 0in compute width()1
+primes = 2, tmp_exponents = 0in compute width()1
+primes = 11, tmp_exponents = 0in compute width()1
+primes = 2, tmp_exponents = 0in compute width()1
+primes = 13, tmp_exponents = 0in compute width()1
+primes = 11, tmp_exponents = 0in compute width()1
+
+ start evaluating the following program
+
+
+starting solver
+
+start cplex
+after M
+after first for
+ i = 1 j = 1
+between p
+in pq
+ i = 1 j = 2
+between p
+in pq
+ i = 1 j = 3
+between p
+in pq
+ i = 1 j = 4
+between p
+in pq
+ i = 1 j = 5
+between p
+in pq
+ i = 1 j = 6
+between p
+in pq
+ i = 2 j = 1
+between p
+in pq
+ i = 2 j = 2
+between p
+in pq
+ i = 2 j = 3
+between p
+in pq
+ i = 2 j = 4
+between p
+in pq
+ i = 2 j = 5
+between p
+in pq
+ i = 2 j = 6
+between p
+in pq
+ i = 3 j = 1
+between p
+in pq
+ i = 3 j = 2
+between p
+in pq
+ i = 3 j = 3
+between p
+in pq
+ i = 3 j = 4
+between p
+in pq
+ i = 3 j = 5
+between p
+in pq
+ i = 3 j = 6
+between p
+in pq
+ i = 4 j = 1
+between p
+in pq
+ i = 4 j = 2
+between p
+in pq
+ i = 4 j = 3
+between p
+in pq
+ i = 4 j = 4
+between p
+in pq
+ i = 4 j = 5
+between p
+in pq
+ i = 4 j = 6
+between p
+in pq
+ i = 5 j = 1
+between p
+in pq
+ i = 5 j = 2
+between p
+in pq
+ i = 5 j = 3
+between p
+in pq
+ i = 5 j = 4
+between p
+in pq
+ i = 5 j = 5
+between p
+in pq
+ i = 5 j = 6
+between p
+in pq
+ i = 6 j = 1
+between p
+in pq
+ i = 6 j = 2
+between p
+in pq
+ i = 6 j = 3
+between p
+in pq
+ i = 6 j = 4
+between p
+in pq
+ i = 6 j = 5
+between p
+in pq
+ i = 6 j = 6
+between p
+in pq
+before subject
+25
+1
+25
+1
+30
+1
+22
+1
+26
+1
+11
+1
+after subject
+befor x and y pairs
+before solve
+Tried aggregator 1 time.
+MIP Presolve eliminated 2 rows and 2 columns.
+Reduced MIP has 70 rows, 47 columns, and 300 nonzeros.
+Reduced MIP has 34 binaries, 12 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.12 ticks)
+Probing time = 0.00 sec. (0.02 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 70 rows, 47 columns, and 300 nonzeros.
+Reduced MIP has 34 binaries, 12 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.14 ticks)
+Probing fixed 7 vars, tightened 0 bounds.
+Probing time = 0.00 sec. (0.03 ticks)
+Clique table members: 11.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 32 threads.
+Root relaxation solution time = 0.00 sec. (0.12 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0       30.0000    15                     30.0000       15         
+      0     0       30.1667     4                    Cuts: 17       31         
+      0     0       31.0000     1                     Cuts: 3       34         
+*     0+    0                           31.0000       31.0000             0.00%
+      0     0        cutoff             31.0000       31.0000       34    0.00%
+Elapsed time = 0.05 sec. (1.61 ticks, tree = 0.01 MB, solutions = 1)
+
+Implied bound cuts applied:  5
+Mixed integer rounding cuts applied:  8
+Zero-half cuts applied:  1
+Gomory fractional cuts applied:  2
+
+Root node processing (before b&c):
+  Real time             =    0.05 sec. (1.62 ticks)
+Parallel b&c, 32 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.05 sec. (1.62 ticks)
+Block1: w=1 h=25 
+Block2: w=1 h=25 
+Block3: w=1 h=30 
+Block4: w=1 h=22 
+Block5: w=1 h=26 
+Block6: w=1 h=11 
+--------------cplex---------------
+Block1, x = 2, y  = 0, width = 1, height = 25
+Block2, x = 1, y  = 0, width = 1, height = 25
+Block3, x = 4, y  = 0, width = 1, height = 30
+Block4, x = 3, y  = 0, width = 1, height = 22
+Block5, x = 5, y  = 5, width = 1, height = 26
+Block6, x = 0, y  = 0, width = 1, height = 11
+
+min_x = 0, max_x  = 6, min_y = 0, max_y = 31
+bounding area  186
+height  31
+Block1 x=2 y=0 w=1 h=25  Block2 x=1 y=0 w=1 h=25  Block3 x=4 y=0 w=1 h=30  Block4 x=3 y=0 w=1 h=22  Block5 x=5 y=5 w=1 h=26  Block6 x=0 y=0 w=1 h=11  
+current floorplan area : 186.000000 
+Block1 x=2 y=0 w=1 h=25  Block2 x=1 y=0 w=1 h=25  Block3 x=4 y=0 w=1 h=30  Block4 x=3 y=0 w=1 h=22  Block5 x=5 y=5 w=1 h=26  Block6 x=0 y=0 w=1 h=11  
+best bounding area found  186
+primes = 11, tmp_exponents = 1in compute width()11
+primes = 11, tmp_exponents = 2in compute width()121
+primes = 11, tmp_exponents = 3in compute width()1331
+primes = 11, tmp_exponents = 4in compute width()14641
+primes = 11, tmp_exponents = 5in compute width()161051
+primes = 11, tmp_exponents = 6in compute width()1771561
+primes = 11, tmp_exponents = 7in compute width()19487171
+primes = 11, tmp_exponents = 8in compute width()214358881
+primes = 11, tmp_exponents = 9in compute width()-2147483648
+
+ start evaluating the following program
+
+
+starting solver
+
+start cplex
+after M
+after first for
+ i = 1 j = 1
+between p
+in pq
+ i = 1 j = 2
+between p
+in pq
+ i = 1 j = 3
+between p
+in pq
+ i = 1 j = 4
+between p
+in pq
+ i = 1 j = 5
+between p
+in pq
+ i = 1 j = 6
+between p
+in pq
+ i = 2 j = 1
+between p
+in pq
+ i = 2 j = 2
+between p
+in pq
+ i = 2 j = 3
+between p
+in pq
+ i = 2 j = 4
+between p
+in pq
+ i = 2 j = 5
+between p
+in pq
+ i = 2 j = 6
+between p
+in pq
+ i = 3 j = 1
+between p
+in pq
+ i = 3 j = 2
+between p
+in pq
+ i = 3 j = 3
+between p
+in pq
+ i = 3 j = 4
+between p
+in pq
+ i = 3 j = 5
+between p
+in pq
+ i = 3 j = 6
+between p
+in pq
+ i = 4 j = 1
+between p
+in pq
+ i = 4 j = 2
+between p
+in pq
+ i = 4 j = 3
+between p
+in pq
+ i = 4 j = 4
+between p
+in pq
+ i = 4 j = 5
+between p
+in pq
+ i = 4 j = 6
+between p
+in pq
+ i = 5 j = 1
+between p
+in pq
+ i = 5 j = 2
+between p
+in pq
+ i = 5 j = 3
+between p
+in pq
+ i = 5 j = 4
+between p
+in pq
+ i = 5 j = 5
+between p
+in pq
+ i = 5 j = 6
+between p
+in pq
+ i = 6 j = 1
+between p
+in pq
+ i = 6 j = 2
+between p
+in pq
+ i = 6 j = 3
+between p
+in pq
+ i = 6 j = 4
+between p
+in pq
+ i = 6 j = 5
+between p
+in pq
+ i = 6 j = 6
+between p
+in pq
+before subject
+25
+1
+25
+1
+30
+1
+22
+1
+26
+1
+0
+-2147483648
+after subject
+befor x and y pairs
+before solve
+Row 'c11' infeasible, all entries at implied bounds.
+Presolve time = 0.00 sec. (0.02 ticks)
+
+Root node processing (before b&c):
+  Real time             =    0.00 sec. (0.03 ticks)
+Parallel b&c, 32 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.00 sec. (0.03 ticks)
+Block1: w=1 h=25 
+Block2: w=1 h=25 
+Block3: w=1 h=30 
+Block4: w=1 h=22 
+Block5: w=1 h=26 
+Block6: w=-2147483648 h=0 
