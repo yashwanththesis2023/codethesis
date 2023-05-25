@@ -1,6 +1,6 @@
 //============================================================================
 // Name        : fpga-floorplanner.cpp
-// Author      : Paul
+// Author      : Paul & Zakarya & Yashwanth 
 // Version     :
 // Copyright   :
 // Description : exhaustive search using lp_solve to check all floorplans
@@ -17,6 +17,8 @@
 #include <climits>
 #include <chrono>
 #include <map>
+#include <fstream>
+#include <sstream>
 
 
 #ifdef GUROBI_USE
@@ -221,6 +223,7 @@ public:
 
 	int fpga_width;
 	int fpga_height;
+	int AreaBounding;
 	vector<block*> *block_list;
     map<string, int> solver_map;
 
@@ -245,6 +248,8 @@ public:
 	}
 
 	void load(char *filename) {
+
+		printf("in load");
 
 		FILE * f;
 		if (filename == NULL)
@@ -321,7 +326,7 @@ public:
         
 		// Set all block configurations? Then print and return
 		if (block_index >= block_list->size()) {
-		    //print_block_configurations();
+		    print_block_configurations();
             double objval = (this->*solver)();
             printf("current floorplan area : %f \n", objval);
             static int best_height = INT_MAX;
@@ -331,8 +336,9 @@ public:
             int new_height = (int) objval;
             if (new_height < best_height)
             {
-                //print_block_configurations();
+                print_block_configurations();
                 best_height = min(best_height, new_height);
+                AreaBounding=best_height;
             }
             printf("best bounding area found  %d\n", best_height);
             return;
@@ -367,7 +373,7 @@ public:
         //cout<< endl<< v->name <<endl;        
         int x = v->x, y = v->y, width = v->width, height = v->height;
         //cout<<"updated in mbr"<<endl;
-        //printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
         
         min_x = min(min_x, x);
         max_x = max(max_x, x + width);
@@ -394,82 +400,82 @@ public:
 		printf("\n");
 	}
 
-	// void print_lp(FILE *f) {
-	// 	block *b;
+	void print_lp(FILE *f) {
+		block *b;
 
-	// 	fprintf(f, "// %10s %10s %10s %10s %10s %10s\n", "name", "idx", "width", "height", "x", "y");
-	// 	// print list of comments with block names and geometries
-	// 	for (int i = 0; i < block_list->size(); i++) {
-	// 		b = block_list->at(i);
-	// 		if (b->preplaced)
-	// 			fprintf(f, "// %10s %10d %10d %10d %10d %10d\n", b->name, i, b->width, b->height, b->x, b->y);
-	// 		else
-	// 			fprintf(f, "// %10s %10d %10d %10d\n", b->name, i, b->width, b->height);
-	// 	}
+		fprintf(f, "// %10s %10s %10s %10s %10s %10s\n", "name", "idx", "width", "height", "x", "y");
+		// print list of comments with block names and geometries
+		for (int i = 0; i < block_list->size(); i++) {
+			b = block_list->at(i);
+			if (b->preplaced)
+				fprintf(f, "// %10s %10d %10d %10d %10d %10d\n", b->name, i, b->width, b->height, b->x, b->y);
+			else
+				fprintf(f, "// %10s %10d %10d %10d\n", b->name, i, b->width, b->height);
+		}
 
-	// 	fprintf(f, "\nmin: y;\n\n");
+		fprintf(f, "\nmin: y;\n\n");
 
-	// 	// compute maximum over widths and heights of all modules
-	// 	// to have an upper bound on FPGA area height
-	// 	int M = 0;
-	// 	for (auto const& v : *block_list)
-	// 		M += max(v->width, v->height);
+		// compute maximum over widths and heights of all modules
+		// to have an upper bound on FPGA area height
+		int M = 0;
+		for (auto const& v : *block_list)
+			M += max(v->width, v->height);
 
-	// 	int eq = 1; // equation number
-	// 	int hi, hj, wi, wj;
-	// 	// xi + hi ri + wi - wi ri <= W for 1 <= i <= n
-	// 	// yi + wi ri + hi - hi ri <= y for 1 <= i <= n
-	// 	for (int i = 1; i <= block_list->size(); i++) {
-	// 		hi = block_list->at(i - 1)->height;
-	// 		wi = block_list->at(i - 1)->width;
-	// 		fprintf(f, "c%d:\t x%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= %-3d;\n", eq++, i, hi, i, wi, wi, i, fpga_width);
-	// 		fprintf(f, "c%d:\t y%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= y; \n", eq++, i, wi, i, hi, hi, i);
-	// 	}
+		int eq = 1; // equation number
+		int hi, hj, wi, wj;
+		// xi + hi ri + wi - wi ri <= W for 1 <= i <= n
+		// yi + wi ri + hi - hi ri <= y for 1 <= i <= n
+		for (int i = 1; i <= block_list->size(); i++) {
+			hi = block_list->at(i - 1)->height;
+			wi = block_list->at(i - 1)->width;
+			fprintf(f, "c%d:\t x%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= %-3d;\n", eq++, i, hi, i, wi, wi, i, fpga_width);
+			fprintf(f, "c%d:\t y%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= y; \n", eq++, i, wi, i, hi, hi, i);
+		}
 
-	// 	// xi + hi ri + wi - wi ri <= xj +       M pij + M qij for 1 <= i < j <= n
-	// 	// yi + wi ri + hi - hi ri <= yj +   M + M pij - M qij for 1 <= i < j <= n
-	// 	// xi - hj rj - wj + wj rj >= xj -   M + M pij - M qij for 1 <= i < j <= n
-	// 	// yi - wj rj - hj + hj rj >= yj - 2 M + M pij + M qij for 1 <= i < j <= n
-	// 	fprintf(f, "\n");
-	// 	for (int i = 1; i <= block_list->size(); i++) {
-	// 		for (int j = i + 1; j <= block_list->size(); j++) {
-	// 			hi = block_list->at(i - 1)->height;
-	// 			hj = block_list->at(j - 1)->height;
-	// 			wi = block_list->at(i - 1)->width;
-	// 			wj = block_list->at(j - 1)->width;
-	// 			fprintf(f, "c%d:\t x%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= x%-3d +       %-3d p%d%d + %-3d q%d%d;\n", eq++, i, hi, i, wi, wi, i, j, M, i, j, M, i, j);
-	// 			fprintf(f, "c%d:\t y%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= y%-3d + %-3d + %-3d p%d%d - %-3d q%d%d;\n", eq++, i, wi, i, hi, hi, i, j, M, M, i, j, M, i, j);
-	// 			fprintf(f, "c%d:\t x%-3d - %-3d r%-3d - %-3d + %-3d r%-3d >= x%-3d - %-3d + %-3d p%d%d - %-3d q%d%d;\n", eq++, i, hj, j, wj, wj, j, j, M, M, i, j, M, i, j);
-	// 			fprintf(f, "c%d:\t y%-3d - %-3d r%-3d - %-3d + %-3d r%-3d >= y%-3d - %-3d + %-3d p%d%d + %-3d q%d%d;\n", eq++, i, wj, j, hj, hj, j, j, (2 * M), M, i, j, M, i, j);
-	// 			fprintf(f, "\n");
-	// 		}
-	// 	}
+		// xi + hi ri + wi - wi ri <= xj +       M pij + M qij for 1 <= i < j <= n
+		// yi + wi ri + hi - hi ri <= yj +   M + M pij - M qij for 1 <= i < j <= n
+		// xi - hj rj - wj + wj rj >= xj -   M + M pij - M qij for 1 <= i < j <= n
+		// yi - wj rj - hj + hj rj >= yj - 2 M + M pij + M qij for 1 <= i < j <= n
+		fprintf(f, "\n");
+		for (int i = 1; i <= block_list->size(); i++) {
+			for (int j = i + 1; j <= block_list->size(); j++) {
+				hi = block_list->at(i - 1)->height;
+				hj = block_list->at(j - 1)->height;
+				wi = block_list->at(i - 1)->width;
+				wj = block_list->at(j - 1)->width;
+				fprintf(f, "c%d:\t x%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= x%-3d +       %-3d p%d%d + %-3d q%d%d;\n", eq++, i, hi, i, wi, wi, i, j, M, i, j, M, i, j);
+				fprintf(f, "c%d:\t y%-3d + %-3d r%-3d + %-3d - %-3d r%-3d <= y%-3d + %-3d + %-3d p%d%d - %-3d q%d%d;\n", eq++, i, wi, i, hi, hi, i, j, M, M, i, j, M, i, j);
+				fprintf(f, "c%d:\t x%-3d - %-3d r%-3d - %-3d + %-3d r%-3d >= x%-3d - %-3d + %-3d p%d%d - %-3d q%d%d;\n", eq++, i, hj, j, wj, wj, j, j, M, M, i, j, M, i, j);
+				fprintf(f, "c%d:\t y%-3d - %-3d r%-3d - %-3d + %-3d r%-3d >= y%-3d - %-3d + %-3d p%d%d + %-3d q%d%d;\n", eq++, i, wj, j, hj, hj, j, j, (2 * M), M, i, j, M, i, j);
+				fprintf(f, "\n");
+			}
+		}
 
-	// 	// print rotational constraints
-	// 	for (int i = 1; i <= block_list->size(); i++)
-	// 		fprintf(f, "r%d <= 1;\n", i);
-	// 	for (int i = 1; i <= block_list->size(); i++)
-	// 		for (int j = i + 1; j <= block_list->size(); j++)
-	// 			fprintf(f, "p%d%d <= 1;\nq%d%d <= 1;\n", i, j, i, j);
+		// print rotational constraints
+		for (int i = 1; i <= block_list->size(); i++)
+			fprintf(f, "r%d <= 1;\n", i);
+		for (int i = 1; i <= block_list->size(); i++)
+			for (int j = i + 1; j <= block_list->size(); j++)
+				fprintf(f, "p%d%d <= 1;\nq%d%d <= 1;\n", i, j, i, j);
 
-	// 	// print x y pairs of preplaced blocks and overwrite in this case rotational constraints to non-rotational
-	// 	fprintf(f, "\n");
-	// 	for (int i = 1; i <= block_list->size(); i++)
-	// 		if (block_list->at(i - 1)->preplaced) {
-	// 			fprintf(f, "x%d = %d;\n", i, block_list->at(i - 1)->x);
-	// 			fprintf(f, "y%d = %d;\n", i, block_list->at(i - 1)->y);
-	// 			fprintf(f, "r%d = 0;\n", i);
-	// 		}
+		// print x y pairs of preplaced blocks and overwrite in this case rotational constraints to non-rotational
+		fprintf(f, "\n");
+		for (int i = 1; i <= block_list->size(); i++)
+			if (block_list->at(i - 1)->preplaced) {
+				fprintf(f, "x%d = %d;\n", i, block_list->at(i - 1)->x);
+				fprintf(f, "y%d = %d;\n", i, block_list->at(i - 1)->y);
+				fprintf(f, "r%d = 0;\n", i);
+			}
 
-	// 	fprintf(f, "\nint ");
-	// 	for (int i = 1; i <= block_list->size(); i++)
-	// 		fprintf(f, "r%d, ", i);
-	// 	for (int i = 1; i <= block_list->size(); i++)
-	// 		for (int j = i + 1; j <= block_list->size(); j++)
-	// 			fprintf(f, "p%d%d, q%d%d%c ", i, j, i, j, (i == block_list->size() - 1) && (j == block_list->size()) ? ';' : ',');
-	// 	fprintf(f, "\n");
+		fprintf(f, "\nint ");
+		for (int i = 1; i <= block_list->size(); i++)
+			fprintf(f, "r%d, ", i);
+		for (int i = 1; i <= block_list->size(); i++)
+			for (int j = i + 1; j <= block_list->size(); j++)
+				fprintf(f, "p%d%d, q%d%d%c ", i, j, i, j, (i == block_list->size() - 1) && (j == block_list->size()) ? ';' : ',');
+		fprintf(f, "\n");
 
-	//}
+	}
 #ifdef GUROBI_USE
     double gurobi()
     {
@@ -546,7 +552,7 @@ public:
          {
              hi = block_list->at(i - 1)->height;
              wi = block_list->at(i - 1)->width;
-             //printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
          }
         
         m1.write("model_gurobi.lp");
@@ -568,7 +574,7 @@ public:
         bounding_area = getBoundingRectAreaNEW();
         cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
-        //print_block_configurations();
+        print_block_configurations();
         return bounding_area;}
         else{return 100000;}
 
@@ -603,23 +609,59 @@ void solverCheck(string name)
 
     double (fpga_floorplan::*solver)();
 
+int readAreaBounding(char *filename){
+	
+	std::ifstream file("final_LBMA_SA_optimization_req_results.csv"); 
+
+    if (file.is_open()) {
+        std::string line;
+        std::getline(file, line); // Skip the header line if needed
+		std::string filename1=filename;
+        int AreaBounding_value;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string name,AreaBounding;
+			//printf("after reading the file\n");
+
+            // Read the values using a delimiter (e.g., comma)
+            std::getline(iss, name, ';'); // Read the first value
+			//cout << name << endl;
+			//cout << filename << endl;
+			cout <<"name " << filename1 << endl;
+            if(filename1.find(name) != std::string::npos){
+            std::getline(iss, AreaBounding, ';'); // Read the second value
+            AreaBounding_value = std::stoi(AreaBounding);
+            std::cout << "AreaBounding value: " << AreaBounding_value << std::endl;
+            return AreaBounding_value;
+            }
+            
+        }	
+}
+}
+
 };
 
 
 int main(int argcc, char** argv) {
+	
+	int value = 0;
+	int width = 0;
 
    // Record start time
    auto start = chrono::high_resolution_clock::now();
    //fpga_floorplan *fp = new fpga_floorplan();
    fpga_floorplan *fp = new fpga_floorplan();
-
+   
+   int area;
 
    if (argcc == 1)
       fp->load(NULL);
    else
       fp->load(argv[1]);
-
-   printf("loading done\n");
+	  
+  	  area=fp->readAreaBounding(argv[1]);
+	printf("loading done\n");
+	
 
    if (argcc == 3)
       fp->solverCheck(argv[2]);
@@ -630,11 +672,21 @@ int main(int argcc, char** argv) {
 
    printf("decomposition done\n");
 
+jumb:
 
    fp->generate_exhaustive(0, 0);
    //printf("final best bounding area %d\n",value);
 
+   value = fp->AreaBounding;
+   width = fp->fpga_width;
+   printf("bounding area = %d \n",value);
+   if (area<fp->AreaBounding){
+   	fp->fpga_width=floor(area/fp->AreaBounding);
+   	printf("width = %d",width);
+   	goto jumb;
+   }
    
+
    
    // Record end time
    auto finish = chrono::high_resolution_clock::now();
