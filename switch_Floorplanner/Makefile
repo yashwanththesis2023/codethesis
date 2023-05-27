@@ -28,7 +28,7 @@ CPP      = g++ -m64 -O -fPIC -fno-strict-aliasing -fexceptions -DNDEBUG -DIL_STD
 
 
 CODE=switchFloorplanner
-CODE_FILE= newfpgaplanner_QCP
+CODE_FILE= final_fpgafloorplanner
 
 #--------------------------------------------------------------------------
 ifeq ($(ALL_USE), 1)
