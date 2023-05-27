@@ -19,6 +19,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 
 
 #ifdef GUROBI_USE
@@ -322,50 +323,66 @@ public:
 	 * all symmetrical configurations can also be created, i.e. <w,h> and <h,w>
 	 * but this is suppressed at the moment
 	 */
-	void generate_exhaustive(int block_index, int prime_index) {
-        
-		// Set all block configurations? Then print and return
-		if (block_index >= block_list->size()) {
-		    print_block_configurations();
-            double objval = (this->*solver)();
-            printf("current floorplan area : %f \n", objval);
-            static int best_height = INT_MAX;
+	bool generate_exhaustive(int block_index, int prime_index, fpga_floorplan* fp, int max_unchanged_iterations,int area) {
 
-
-            char *ptr;
-            int new_height = (int) objval;
-            if (new_height < best_height)
-            {
-                print_block_configurations();
-                best_height = min(best_height, new_height);
-                AreaBounding=best_height;
-            }
-            printf("best bounding area found  %d\n", best_height);
-            return;
-            }
-			 
+		static int unchanged_iterations = 0;  // Counter variable for unchanged iterations
 		
+		// Set all block configurations? Then print and return
+		if (block_index >= fp->block_list->size()) {
+			double objval = (fp->*fp->solver)();
+			printf("current floorplan area: %f\n", objval);
+			static int best_height = INT_MAX;
 
-		block *b = block_list->at(block_index);
+			int new_height = (int)objval;
+			if (new_height < best_height) {
+				best_height = min(best_height, new_height);
+				fp->AreaBounding = best_height;
+				cout << "Area bounding in gen" << AreaBounding << endl;
+				unchanged_iterations = 0;
+			} else if (best_height < area) {
+				return true;  // Exit the function and continue with the main code
+			} else {
+				unchanged_iterations++;
+			}
 
-		// is the block pre-placed, then only one geometry is possible
+			cout << "unchanged_iterations = " << unchanged_iterations << endl;
+			printf("best bounding area found: %d\n", best_height);
+
+			if (unchanged_iterations >= max_unchanged_iterations) {
+				printf("Exiting the process due to no improvement in best height.\n");
+				return true;  // Exit the function and continue with the main code
+			}
+
+			return false;
+		}
+
+		block* b = fp->block_list->at(block_index);
+
+		// If the block is pre-placed, then only one geometry is possible
 		if (b->preplaced) {
-			generate_exhaustive(block_index + 1, 0);
-			return;
+			if (generate_exhaustive(block_index + 1, 0, fp, max_unchanged_iterations,area))
+				return true;  // Exit the function and continue with the main code
+			return false;
 		}
 
-		// all prime exponents in current block set, continue with prime 0 from the next block
+		// If all prime exponents in the current block set, continue with prime 0 from the next block
 		if (prime_index >= b->primes_len) {
-			if (!(b->compute_width_height() > (((int) sqrt(b->area)) + 1))) // skip symmetric case
-				generate_exhaustive(block_index + 1, 0);
-			return;
-		}
+			if (!(b->compute_width_height() > (((int)sqrt(b->area)) + 1))) {
+				// Skip symmetric case
+				if (generate_exhaustive(block_index + 1, 0, fp, max_unchanged_iterations,area))
+					return true;  // Exit the function and continue with the main code
+			}
+			return false;
+    }
 
-		// not pre-placed module and not all prime exponents set
-		for (int i = 0; i <= b->exponents[prime_index]; i++) {
-			b->tmp_exponents[prime_index] = i;
-			generate_exhaustive(block_index, prime_index + 1);
-		}
+    // If the block is not pre-placed and not all prime exponents are set
+    for (int i = 0; i <= b->exponents[prime_index]; i++) {
+        b->tmp_exponents[prime_index] = i;
+        if (generate_exhaustive(block_index, prime_index + 1, fp, max_unchanged_iterations,area))
+            return true;  // Exit the function and continue with the main code
+    }
+
+    return false;
 	}
     double getBoundingRectAreaNEW() {
     int min_x = INT_MAX, max_x = INT_MIN, min_y = INT_MAX, max_y = INT_MIN;
@@ -373,7 +390,7 @@ public:
         //cout<< endl<< v->name <<endl;        
         int x = v->x, y = v->y, width = v->width, height = v->height;
         //cout<<"updated in mbr"<<endl;
-        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+        //printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
         
         min_x = min(min_x, x);
         max_x = max(max_x, x + width);
@@ -552,7 +569,7 @@ public:
          {
              hi = block_list->at(i - 1)->height;
              wi = block_list->at(i - 1)->width;
-             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+             //printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
          }
         
         m1.write("model_gurobi.lp");
@@ -574,7 +591,7 @@ public:
         bounding_area = getBoundingRectAreaNEW();
         cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
-        print_block_configurations();
+        //print_block_configurations();
         return bounding_area;}
         else{return 100000;}
 
@@ -611,7 +628,7 @@ void solverCheck(string name)
 
 int readAreaBounding(char *filename){
 	
-	std::ifstream file("final_LBMA_SA_optimization_req_results.csv"); 
+	std::ifstream file("final_MBLA_SA_optimization_req_results.csv"); 
 
     if (file.is_open()) {
         std::string line;
@@ -643,59 +660,59 @@ int readAreaBounding(char *filename){
 
 
 int main(int argcc, char** argv) {
-	
-	int value = 0;
-	int width = 0;
+    int value = 0;
+    int width = 0;
 
-   // Record start time
-   auto start = chrono::high_resolution_clock::now();
-   //fpga_floorplan *fp = new fpga_floorplan();
-   fpga_floorplan *fp = new fpga_floorplan();
-   
-   int area;
+    // Record start time
+    auto start = chrono::high_resolution_clock::now();
 
-   if (argcc == 1)
-      fp->load(NULL);
-   else
-      fp->load(argv[1]);
-	  
-  	  area=fp->readAreaBounding(argv[1]);
-	printf("loading done\n");
-	
+    fpga_floorplan* fp = new fpga_floorplan();
 
-   if (argcc == 3)
-      fp->solverCheck(argv[2]);
-   else
-      fp->solverCheck(solver_use);
+    int area;
 
-   fp->decompose();
+    if (argcc == 1)
+        fp->load(NULL);
+    else
+        fp->load(argv[1]);
 
-   printf("decomposition done\n");
+    area = fp->readAreaBounding(argv[1]);
+	cout << area << endl;
+    printf("loading done\n");
 
-jumb:
+    if (argcc == 3)
+        fp->solverCheck(argv[2]);
+    else
+        fp->solverCheck(solver_use);
 
-   fp->generate_exhaustive(0, 0);
-   //printf("final best bounding area %d\n",value);
+    fp->decompose();
 
-   value = fp->AreaBounding;
-   width = fp->fpga_width;
-   printf("bounding area = %d \n",value);
-   if (area<fp->AreaBounding){
-   	fp->fpga_width=floor(area/fp->AreaBounding);
-   	printf("width = %d",width);
-   	goto jumb;
-   }
-   
+    printf("decomposition done\n");
 
-   
-   // Record end time
-   auto finish = chrono::high_resolution_clock::now();
+    int max_unchanged_iterations = 30;
 
-   chrono::duration<double> elapsed = finish - start;
+    while (true) {
+        bool stop_generating = fp->generate_exhaustive(0, 0, fp, max_unchanged_iterations, area);
+		if (stop_generating) {
+			// Continue with the remaining code in the loop
+			value = fp->AreaBounding;
+			width = fp->fpga_width;
+			printf("bounding area = %d \n", value);
 
+			if (area < fp->AreaBounding) {
+				fp->fpga_width = floor(area / fp->AreaBounding);
+				printf("width = %d\n", width);
+			} else {
+				break;  // Exit the loop and continue with the main code
+			}
+		}
+	}
+    
 
-   cout << "Elapsed time: " << elapsed.count() <<endl; 
+    // Record end time
+    auto finish = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = finish - start;
 
-    return (0);
+    cout << "Elapsed time: " << elapsed.count() << endl;
 
+    return 0;
 }
