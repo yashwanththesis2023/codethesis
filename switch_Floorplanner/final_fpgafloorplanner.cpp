@@ -215,6 +215,8 @@ public:
 	int fpga_width;
 	int fpga_height;
 	int AreaBounding;
+	int floorplan_height;
+	char *filename;
 	vector<block*> *block_list;
     map<string, int> solver_map;
 
@@ -314,17 +316,20 @@ public:
 	 * but this is suppressed at the moment
 	 */
 	void generate_exhaustive(int block_index, int prime_index) {
-
-        //int req_bounding_area = readAreaBounding(argv[1]);
-        
+		//cout <<"filename = "<< filename <<endl;
+        int req_bounding_area = readAreaBounding(filename);
+		
+        static int unchanged_iterations = 0;
+		int max_unchanged_iterations = 10;
 		// Set all block configurations? Then print and return
 		if (block_index >= block_list->size()) {
 		    //print_block_configurations();
             double objval = (this->*solver)();
             printf("current floorplan area : %f \n", objval);
             static int best_height = INT_MAX;
+			cout << "current floorplan_height =" << floorplan_height << endl;
 
-
+			
             char *ptr;
             int new_height = (int) objval;
             if (new_height < best_height)
@@ -332,13 +337,22 @@ public:
                 //print_block_configurations();
                 best_height = min(best_height, new_height);
                 AreaBounding=best_height;
-            }
+				unchanged_iterations = 0;
+            }else if(best_height<=req_bounding_area){
+				printf("found the req bounding area \n");
+				exit(0);
+			}else{
+				unchanged_iterations++;
+			}
+			cout << "unchanged_iterations = " << unchanged_iterations << endl;
             printf("best bounding area found  %d\n", best_height);
-
-            return;
-            }
-			 
-		
+			
+			if (unchanged_iterations >= max_unchanged_iterations) {
+				printf("Exiting the process due to no improvement in best height.\n");
+				exit(0);  // Exit the function and continue with the main code
+			}
+			return;
+		}
 
 		block *b = block_list->at(block_index);
 
@@ -367,7 +381,7 @@ public:
         //cout<< endl<< v->name <<endl;        
         int x = v->x, y = v->y, width = v->width, height = v->height;
         //cout<<"updated in mbr"<<endl;
-        printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
+        //printf("%s, x = %d, y  = %d, width = %d, height = %d\n",v->name,x,y,width,height);
         
         min_x = min(min_x, x);
         max_x = max(max_x, x + width);
@@ -546,7 +560,7 @@ public:
          {
              hi = block_list->at(i - 1)->height;
              wi = block_list->at(i - 1)->width;
-             printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
+             //printf("%s: w=%d h=%d \n", block_list->at(i - 1)->name, wi,hi);
          }
         
         m1.write("model_gurobi.lp");
@@ -564,11 +578,12 @@ public:
             // cout << "hi" << block_list->at(i - 1)->height << endl;
             // cout << "wi" << block_list->at(i - 1)->width << endl;
         }
-        
+
+        floorplan_height = m1.get(GRB_DoubleAttr_ObjVal);
         bounding_area = getBoundingRectAreaNEW();
         cout<< "current bounding area  " << bounding_area << endl;
         cout<< "height  "<< m1.get(GRB_DoubleAttr_ObjVal)<<endl;
-        print_block_configurations();
+        //print_block_configurations();
         return bounding_area;}
         else{return 100000;}
 
@@ -647,6 +662,7 @@ int main(int argcc, char** argv) {
    int width = 0;
    
    int area;
+   fp->filename=argv[1];
 
    if (argcc == 1)
       fp->load(NULL);
@@ -675,7 +691,7 @@ jumb:
 
    printf("bounding area = %d \n", value);
    if (area<fp->AreaBounding){
-   	fp->fpga_width=floor(area/fp->AreaBounding);
+   	fp->fpga_width=floor(area/fp->floorplan_height);
    	printf("width = %d\n", width);
    	goto jumb;
    }
