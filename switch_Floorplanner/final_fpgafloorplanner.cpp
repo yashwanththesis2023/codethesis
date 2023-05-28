@@ -340,7 +340,7 @@ public:
 				unchanged_iterations = 0;
             }else if(best_height<=req_bounding_area){
 				printf("found the req bounding area \n");
-				goto jumb;
+				throw std::string("Solver Finished");
 			}else{
 				unchanged_iterations++;
 			}
@@ -687,14 +687,20 @@ int main(int argcc, char** argv) {
    printf("decomposition done\n");
 
 
+try{
 
-   fp->generate_exhaustive(0, 0);
-   //printf("final best bounding area %d\n",value);
-jumb:
+	fp->generate_exhaustive(0, 0);
+
+}catch(const std::string & error){
+   
    value = fp->AreaBounding;
-   width = fp->fpga_width;
    printf("final bounding area = %d \n", value);
 
+}
+   
+   //printf("final best bounding area %d\n",value);
+
+   
    
 
    
