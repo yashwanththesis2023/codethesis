@@ -340,7 +340,7 @@ public:
 				unchanged_iterations = 0;
             }else if(best_height<=req_bounding_area){
 				printf("found the req bounding area \n");
-				exit(0);
+				goto jumb;
 			}else{
 				unchanged_iterations++;
 			}
@@ -348,8 +348,12 @@ public:
             printf("best bounding area found  %d\n", best_height);
 			
 			if (unchanged_iterations >= max_unchanged_iterations) {
+				fpga_width = floor(req_bounding_area/floorplan_height);
+				cout << "----changed fpga_width to----- " << fpga_width << endl;
+				fpga_height = 40;
+				generate_exhaustive(0,0);
 				printf("Exiting the process due to no improvement in best height.\n");
-				exit(0);  // Exit the function and continue with the main code
+				//exit(0);  // Exit the function and continue with the main code
 			}
 			return;
 		}
@@ -636,11 +640,11 @@ int readAreaBounding(char *filename){
             std::getline(iss, name, ';'); // Read the first value
 			//cout << name << endl;
 			//cout << filename << endl;
-			cout <<"name " << filename1 << endl;
+			//cout <<"name " << filename1 << endl;
             if(filename1.find(name) != std::string::npos){
             std::getline(iss, AreaBounding, ';'); // Read the second value
             AreaBounding_value = std::stoi(AreaBounding);
-            std::cout << "AreaBounding value: " << AreaBounding_value << std::endl;
+            //std::cout << "AreaBounding value: " << AreaBounding_value << std::endl;
             return AreaBounding_value;
             }
             
@@ -682,19 +686,15 @@ int main(int argcc, char** argv) {
 
    printf("decomposition done\n");
 
-jumb:
+
 
    fp->generate_exhaustive(0, 0);
    //printf("final best bounding area %d\n",value);
+jumb:
    value = fp->AreaBounding;
    width = fp->fpga_width;
+   printf("final bounding area = %d \n", value);
 
-   printf("bounding area = %d \n", value);
-   if (area<fp->AreaBounding){
-   	fp->fpga_width=floor(area/fp->floorplan_height);
-   	printf("width = %d\n", width);
-   	goto jumb;
-   }
    
 
    
