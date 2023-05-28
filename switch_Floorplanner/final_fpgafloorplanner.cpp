@@ -12,6 +12,7 @@
 #include <sstream>
 
 
+
 #ifdef GUROBI_USE
 #include "lib/gurobi_c++.h"
 #endif
@@ -659,21 +660,20 @@ int main(int argcc, char** argv) {
 
    // Record start time
    auto start = chrono::high_resolution_clock::now();
-   //fpga_floorplan *fp = new fpga_floorplan();
+   std::ofstream outputFile("MBLA_optimal.csv", std::ios::app);
    fpga_floorplan *fp = new fpga_floorplan();
 
+
    int value = 0;
-   int width = 0;
+   double runtime;
    
-   int area;
    fp->filename=argv[1];
 
    if (argcc == 1)
       fp->load(NULL);
    else
       fp->load(argv[1]);
-	  
-  	  area=fp->readAreaBounding(argv[1]);
+
 	printf("loading done\n");
 	
 
@@ -690,6 +690,7 @@ int main(int argcc, char** argv) {
 try{
 
 	fp->generate_exhaustive(0, 0);
+	printf("after generative");
 
 }catch(const std::string & error){
    
@@ -698,19 +699,15 @@ try{
 
 }
    
-   //printf("final best bounding area %d\n",value);
-
-   
-   
-
-   
    // Record end time
    auto finish = chrono::high_resolution_clock::now();
 
    chrono::duration<double> elapsed = finish - start;
 
 
-   cout << "Elapsed time: " << elapsed.count() <<endl; 
+   cout << "Elapsed time: " << elapsed.count() <<endl;
+   outputFile << fp->filename << "," << value << "," << elapsed.count() << std::endl; 
+   outputFile.close();
 
     return (0);
 
